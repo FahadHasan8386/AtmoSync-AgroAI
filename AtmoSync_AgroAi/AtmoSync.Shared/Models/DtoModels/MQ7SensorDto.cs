@@ -6,7 +6,9 @@ using System.Threading.Tasks;
 
 namespace AtmoSync.Shared.Models.DtoModels
 {
-    internal class MQ7SensorDto
+    public class MQ7SensorDto : BaseModel
     {
+        public long Id { get; set; }
+        public float COLevel { get; set; }
     }
 }

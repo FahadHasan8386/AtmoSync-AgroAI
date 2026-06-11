@@ -6,7 +6,10 @@ using System.Threading.Tasks;
 
 namespace AtmoSync.Shared.Models.DtoModels
 {
-    internal class DHTSensorDto
+    public class DHTSensorDto : BaseModel
     {
+        public long Id { get; set; }
+        public float Temperature { get; set; }
+        public float Humidity { get; set; }
     }
 }

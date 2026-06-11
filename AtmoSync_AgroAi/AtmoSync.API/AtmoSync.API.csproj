@@ -11,11 +11,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\" />
-    <Folder Include="Interfaces\" />
+    <Folder Include="Interfaces\IRepositories\" />
+    <Folder Include="Interfaces\IServices\" />
     <Folder Include="Model\" />
-    <Folder Include="Services\" />
-    <Folder Include="Repository\" />
   </ItemGroup>
 
 </Project>

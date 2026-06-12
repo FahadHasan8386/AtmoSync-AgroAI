@@ -7,7 +7,15 @@ namespace AtmoSync.API.Interfaces.IServices
     public interface IDHTSensorService
     {
         Task<List<DHTSensor>> GetAllAsync();
+
+        Task<ResponseModel> GetLatestAsync();
+
+        Task<ResponseModel> GetLatestReadingsAsync(int count);
+
+        Task<ResponseModel> GetByDateRangeAsync(DateTime fromDate, DateTime toDate);
+
         Task<ResponseModel> CreateAsync(DHTSensorDto dto);
+
         Task<ResponseModel> DeleteAsync(long id);
     }
 }

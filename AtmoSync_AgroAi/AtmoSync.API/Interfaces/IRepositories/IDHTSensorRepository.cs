@@ -9,13 +9,12 @@ namespace AtmoSync.API.Interfaces.IRepositories
 
         Task<DHTSensor?> GetLatestAsync();
 
+        Task<List<DHTSensor>> GetLatestReadingsAsync(int count);
+
         Task<long> CreateAsync(DHTSensorDto dto);
 
         Task<int> DeleteAsync(long id);
 
-        Task<List<DHTSensor>> GetByDateRangeAsync(
-            DateTime fromDate,
-            DateTime toDate);
-
+        Task<List<DHTSensor>> GetByDateRangeAsync(DateTime fromDate, DateTime toDate);
     }
 }

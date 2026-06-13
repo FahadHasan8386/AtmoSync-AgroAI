@@ -18,16 +18,8 @@ namespace AtmoSync.API.Repository
         // GET ALL
         public async Task<List<MQ136Sensor>> GetAllAsync()
         {
-            const string sql = @"
-                SELECT
-                    Id,
-                    H2SLevel,
-                    CreatedBy,
-                    CreatedAt,
-                    InActive,
-                    ModifiedBy,
-                    ModifiedAt
-                FROM DHTSensor
+            const string sql = @"SELECT Id, H2SLevel,CreatedBy, CreatedAt,InActive,ModifiedBy,ModifiedAt
+                FROM MQ136Sensor
                 ORDER BY CreatedAt DESC";
 
             var result = await _connection.QueryAsync<MQ136Sensor>(sql);
@@ -57,7 +49,7 @@ namespace AtmoSync.API.Repository
                     InActive,
                     ModifiedBy,
                     ModifiedAt
-                FROM DHTSensor
+                FROM MQ136Sensor
                 ORDER BY CreatedAt DESC";
 
             var result = await _connection.QueryAsync<MQ136Sensor>(

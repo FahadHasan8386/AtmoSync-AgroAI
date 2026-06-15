@@ -1,0 +1,104 @@
+CREATE DATABASE IotArgoDB;
+GO
+
+USE IotArgoDB;
+GO
+
+CREATE TABLE Users
+(
+    Id BIGINT IDENTITY(1,1) PRIMARY KEY,
+
+    FullName NVARCHAR(100) NOT NULL,
+
+    Email NVARCHAR(150) NOT NULL UNIQUE,
+
+    PasswordHash NVARCHAR(MAX) NOT NULL,
+
+    Role NVARCHAR(50) NOT NULL DEFAULT 'User',
+
+    CreatedBy NVARCHAR(100) NULL,
+    CreatedAt DATETIME NOT NULL DEFAULT GETDATE(),
+
+    InActive BIT NOT NULL DEFAULT 0,
+
+    ModifiedBy NVARCHAR(100) NULL,
+    ModifiedAt DATETIME NULL
+);
+GO
+
+CREATE TABLE DHTSensor
+(
+    Id BIGINT IDENTITY(1,1) PRIMARY KEY,
+
+    Temperature FLOAT NOT NULL,
+
+    Humidity FLOAT NOT NULL,
+
+    CreatedBy NVARCHAR(100) NULL,
+    CreatedAt DATETIME NOT NULL DEFAULT GETDATE(),
+
+    InActive BIT NOT NULL DEFAULT 0,
+
+    ModifiedBy NVARCHAR(100) NULL,
+    ModifiedAt DATETIME NULL
+);
+GO
+
+CREATE TABLE MQ7Sensor
+(
+    Id BIGINT IDENTITY(1,1) PRIMARY KEY,
+
+    COLevel FLOAT NOT NULL,
+
+    CreatedBy NVARCHAR(100) NULL,
+    CreatedAt DATETIME NOT NULL DEFAULT GETDATE(),
+
+    InActive BIT NOT NULL DEFAULT 0,
+
+    ModifiedBy NVARCHAR(100) NULL,
+    ModifiedAt DATETIME NULL
+);
+GO
+
+CREATE TABLE MQ136Sensor
+(
+    Id BIGINT IDENTITY(1,1) PRIMARY KEY,
+
+    H2SLevel FLOAT NOT NULL,
+
+    CreatedBy NVARCHAR(100) NULL,
+    CreatedAt DATETIME NOT NULL DEFAULT GETDATE(),
+
+    InActive BIT NOT NULL DEFAULT 0,
+
+    ModifiedBy NVARCHAR(100) NULL,
+    ModifiedAt DATETIME NULL
+);
+GO
+
+CREATE TABLE PredictionResults
+(
+    Id BIGINT IDENTITY(1,1) PRIMARY KEY,
+
+    PredictedTemperature FLOAT NULL,
+
+    PredictedHumidity FLOAT NULL,
+
+    PredictedCO FLOAT NULL,
+
+    PredictedH2S FLOAT NULL,
+
+    PredictionDate DATETIME NOT NULL DEFAULT GETDATE()
+);
+GO
+
+CREATE TABLE IrrigationLogs
+(
+    Id BIGINT IDENTITY(1,1) PRIMARY KEY,
+
+    PumpStatus BIT NOT NULL,
+
+    Reason NVARCHAR(255) NULL,
+
+    TriggeredAt DATETIME NOT NULL DEFAULT GETDATE()
+);

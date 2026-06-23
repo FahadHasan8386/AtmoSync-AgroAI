@@ -18,7 +18,7 @@ public class DHTSensorController : ControllerBase
     public async Task<IActionResult> GetAll()
     {
         var result = await _service.GetAllAsync();
-        return Ok(result);
+        return StatusCode(result.Code, result);
     }
 
     // GET LATEST

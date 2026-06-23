@@ -6,7 +6,7 @@ namespace AtmoSync.API.Interfaces.IServices
 {
     public interface IDHTSensorService
     {
-        Task<List<DHTSensor>> GetAllAsync();
+        Task<ResponseModel> GetAllAsync();
 
         Task<ResponseModel> GetLatestAsync();
 

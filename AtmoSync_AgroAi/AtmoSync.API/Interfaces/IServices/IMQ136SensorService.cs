@@ -6,7 +6,7 @@ namespace AtmoSync.API.Interfaces.IServices
 {
     public interface IMQ136SensorService
     {
-        Task<List<MQ136Sensor>> GetAllAsync();
+        Task<ResponseModel> GetAllAsync();
 
         Task<ResponseModel> GetLatestAsync();
 

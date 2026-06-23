@@ -16,9 +16,27 @@ public class DHTSensorService : IDHTSensorService
     }
 
     // GET ALL
-    public async Task<List<DHTSensor>> GetAllAsync()
+    public async Task<ResponseModel> GetAllAsync()
     {
-        return await _repository.GetAllAsync();
+        try
+        {
+            var data = await _repository.GetAllAsync();
+
+            return new ResponseModel
+            {
+                Code = StatusCodes.Status200OK,
+                Message = "Data Found",
+                Data = data
+            };
+        }
+        catch (Exception ex)
+        {
+            return new ResponseModel
+            {
+                Code = StatusCodes.Status500InternalServerError,
+                Message = ex.Message
+            };
+        }
     }
 
     // GET LATEST 

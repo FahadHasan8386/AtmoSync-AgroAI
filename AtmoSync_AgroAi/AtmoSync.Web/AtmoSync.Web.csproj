@@ -20,7 +20,10 @@
 
   <ItemGroup>
     <Folder Include="Component\" />
-    <Folder Include="Services\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\AtmoSync.Shared\AtmoSync.Shared.csproj" />
   </ItemGroup>
 
 </Project>

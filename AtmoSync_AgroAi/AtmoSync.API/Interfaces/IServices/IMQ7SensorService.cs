@@ -6,7 +6,7 @@ namespace AtmoSync.API.Interfaces.IServices
 {
     public interface IMQ7SensorService
     {
-        Task<List<MQ7Sensor>> GetAllAsync();
+        Task<ResponseModel> GetAllAsync();
 
         Task<ResponseModel> GetLatestAsync();
 

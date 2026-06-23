@@ -1,5 +1,132 @@
-﻿<h3>DHTSensor</h3>
+﻿@page "/dht22"
+
+@using System.Text.Json
+@using AtmoSync.Web.Services;
+@using AtmoSync.Shared.Models.DtoModels;
+@inject DhtSensorApiService DHT22ApiService
+
+<h1>DHT22 Sensor Details</h1>
+
+<div class="card-body">
+
+    <div class="table-responsive">
+
+        @if (IsLoading)
+        {
+            <p style="text-align:center;padding:8px 0;">
+                Loading...
+            </p>
+        }
+        else
+        {
+            <table class="table table-hover align-middle">
+
+                <thead class="table-light">
+                    <tr>
+                        <th>#</th>
+                        <th>DHT22 ID</th>
+                        <th>Temperature</th>
+                        <th>Humidity</th>
+                        <th>Created At</th>
+                        <th>Created By</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    @if (DHTSensorViewModel.Any())
+                    {
+                        var index = 1;
+
+                        foreach (var item in DHTSensorViewModel)
+                        {
+                            <tr>
+
+                                <td>@index</td>
+                                <td>@item.Id</td>
+                                <td>@item.Temperature °C</td>
+                                <td>@item.Humidity %</td>
+                                <td>@item.CreatedAt.ToString("dd MMM yyyy")</td>
+                                <td>@item.CreatedBy</td>
+
+                                <td>
+                                    <button class="btn btn-sm btn-outline-danger"
+                                            @onclick="() => DeleteSensor(item.Id)">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </td>
+
+                            </tr>
+
+                            index++;
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="7"
+                                class="text-center text-muted">
+                                No data found
+                            </td>
+                        </tr>
+                    }
+
+                </tbody>
+
+            </table>
+        }
+
+    </div>
+    ```
+
+</div>
 
 @code {
+
+private bool IsLoading { get; set; }
+
+    private List<DHTSensorDto> DHTSensorViewModel { get; set; } = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        IsLoading = true;
+
+        await LoadSensorDataAsync();
+
+        IsLoading = false;
+    }
+
+    private async Task LoadSensorDataAsync()
+    {
+        var response = await DHT22ApiService.GetAllAsync();
+
+        if (response?.Data != null)
+        {
+            DHTSensorViewModel =
+                JsonSerializer.Deserialize<List<DHTSensorDto>>
+                (
+                    JsonSerializer.Serialize(response.Data)
+                ) ?? new();
+
+            DHTSensorViewModel =
+                DHTSensorViewModel
+                .OrderByDescending(x => x.CreatedAt)
+                .ToList();
+        }
+    }
+
+    private async Task DeleteSensor(long dhtId)
+    {
+        var success =
+            await DHT22ApiService.DeleteAsync(dhtId);
+
+        if (success)
+        {
+            await LoadSensorDataAsync();
+        }
+
+        StateHasChanged();
+    }
 
 }

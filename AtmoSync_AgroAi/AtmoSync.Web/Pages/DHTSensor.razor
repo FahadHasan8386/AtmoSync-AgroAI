@@ -1,6 +1,4 @@
 ﻿@page "/dht22"
-
-@using System.Text.Json
 @using AtmoSync.Web.Services;
 @using AtmoSync.Shared.Models.DtoModels;
 @inject DhtSensorApiService DHT22ApiService
@@ -82,7 +80,7 @@
 
 @code {
 
-private bool IsLoading { get; set; }
+    private bool IsLoading { get; set; }
 
     private List<DHTSensorDto> DHTSensorViewModel { get; set; } = new();
 
@@ -99,27 +97,21 @@ private bool IsLoading { get; set; }
     {
         var response = await DHT22ApiService.GetAllAsync();
 
-        if (response != null)
+        if (response?.Code == 200 && response.Data != null)
         {
-            DHTSensorViewModel =
-                JsonSerializer.Deserialize<List<DHTSensorDto>>
-                (
-                    JsonSerializer.Serialize(response)
-                ) ?? new();
-
-            DHTSensorViewModel =
-                DHTSensorViewModel
-                .OrderByDescending(x => x.CreatedAt)
-                .ToList();
+            DHTSensorViewModel = response.Data.OrderByDescending(x => x.CreatedAt).ToList();
+        }
+        else
+        {
+            DHTSensorViewModel = new();
         }
     }
 
     private async Task DeleteSensor(long dhtId)
     {
-        var success =
-            await DHT22ApiService.DeleteAsync(dhtId);
+        var success = await DHT22ApiService.DeleteAsync(dhtId);
 
-        if (success)
+        if (success?.Code == 200)
         {
             await LoadSensorDataAsync();
         }

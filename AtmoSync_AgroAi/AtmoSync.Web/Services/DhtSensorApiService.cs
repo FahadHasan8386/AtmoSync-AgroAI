@@ -15,11 +15,11 @@ namespace AtmoSync.Web.Services
         }
 
         // GET ALL
-        public async Task<List<DHTSensorDto>> GetAllAsync()
+        public async Task<ResponseModel<List<DHTSensorDto>>?> GetAllAsync()
         {
             try
             {
-                return await _httpClient.GetFromJsonAsync<List<DHTSensorDto>>("DHTSensor");
+                return await _httpClient.GetFromJsonAsync<ResponseModel<List<DHTSensorDto>>>("DHTSensor");
             }
             catch (Exception ex)
             {
@@ -29,11 +29,11 @@ namespace AtmoSync.Web.Services
         }
 
         // GET LATEST
-        public async Task<DHTSensorDto> GetLatestAsync()
+        public async Task<ResponseModel<DHTSensorDto>?> GetLatestAsync()
         {
             try
             {
-                return await _httpClient.GetFromJsonAsync<DHTSensorDto>("DHTSensor/latest");
+                return await _httpClient.GetFromJsonAsync<ResponseModel<DHTSensorDto>>("DHTSensor/latest");
             }
             catch (Exception ex)
             {
@@ -43,11 +43,11 @@ namespace AtmoSync.Web.Services
         }
 
         // GET LAST N
-        public async Task<List<DHTSensorDto>> GetLatestReadingsAsync(int count)
+        public async Task<ResponseModel<List<DHTSensorDto>>?> GetLatestReadingsAsync(int count)
         {
             try
             {
-                return await _httpClient.GetFromJsonAsync<List<DHTSensorDto>>($"DHTSensor/latest/{count}");
+                return await _httpClient.GetFromJsonAsync<ResponseModel<List<DHTSensorDto>>>($"DHTSensor/latest/{count}");
             }
             catch (Exception ex)
             {
@@ -57,34 +57,34 @@ namespace AtmoSync.Web.Services
         }
 
         // CREATE
-        public async Task<bool> CreateAsync(DHTSensorDto dto)
+        public async Task<ResponseModel<long>?> CreateAsync(DHTSensorDto dto)
         {
             try
             {
                 var response = await _httpClient.PostAsJsonAsync("DHTSensor", dto);
 
-                return response.IsSuccessStatusCode;
+                return await response.Content.ReadFromJsonAsync<ResponseModel<long>>();
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
-                return false;
+                return null;
             }
         }
 
         // DELETE
-        public async Task<bool> DeleteAsync(long id)
+        public async Task<ResponseModel<int>?> DeleteAsync(long id)
         {
             try
             {
                 var response = await _httpClient.DeleteAsync($"DHTSensor/{id}");
 
-                return response.IsSuccessStatusCode;
+                return await response.Content.ReadFromJsonAsync<ResponseModel<int>>();
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
-                return false;
+                return null;
             }
         }
     }

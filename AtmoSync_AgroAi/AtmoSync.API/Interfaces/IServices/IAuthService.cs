@@ -5,9 +5,9 @@ namespace AtmoSync.API.Interfaces.IServices
 {
     public interface IAuthService
     {
-        Task<ResponseModel> RegisterAsync(RegisterDto dto);
+        Task<ResponseModel<string>> RegisterAsync(RegisterDto dto);
 
-        Task<ResponseModel> LoginAsync(LoginDto dto);
+        Task<ResponseModel<LoginResponseDto>> LoginAsync(LoginDto dto);
 
     }
 }

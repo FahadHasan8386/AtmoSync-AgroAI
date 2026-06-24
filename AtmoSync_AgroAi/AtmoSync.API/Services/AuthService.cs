@@ -18,13 +18,13 @@ namespace AtmoSync.API.Services
             _jwtService = jwtService;
         }
 
-        public async Task<ResponseModel> RegisterAsync(RegisterDto dto)
+        public async Task<ResponseModel<string>> RegisterAsync(RegisterDto dto)
         {
             try
             {
                 if (string.IsNullOrWhiteSpace(dto.FullName))
                 {
-                    return new ResponseModel
+                    return new ResponseModel<string>
                     {
                         Code = StatusCodes.Status400BadRequest,
                         Message = "Full Name is required."
@@ -33,7 +33,7 @@ namespace AtmoSync.API.Services
 
                 if (string.IsNullOrWhiteSpace(dto.Email))
                 {
-                    return new ResponseModel
+                    return new ResponseModel<string>
                     {
                         Code = StatusCodes.Status400BadRequest,
                         Message = "Email is required."
@@ -42,7 +42,7 @@ namespace AtmoSync.API.Services
 
                 if (string.IsNullOrWhiteSpace(dto.Password))
                 {
-                    return new ResponseModel
+                    return new ResponseModel<string>
                     {
                         Code = StatusCodes.Status400BadRequest,
                         Message = "Password is required."
@@ -53,7 +53,7 @@ namespace AtmoSync.API.Services
 
                 if (existingUser != null)
                 {
-                    return new ResponseModel
+                    return new ResponseModel<string>
                     {
                         Code = StatusCodes.Status409Conflict,
                         Message = "Email already exists."
@@ -81,14 +81,14 @@ namespace AtmoSync.API.Services
 
                 if (result > 0)
                 {
-                    return new ResponseModel
+                    return new ResponseModel<string>
                     {
                         Code = StatusCodes.Status201Created,
                         Message = "Registration successful."
                     };
                 }
 
-                return new ResponseModel
+                return new ResponseModel<string>
                 {
                     Code = StatusCodes.Status400BadRequest,
                     Message = "Registration failed."
@@ -96,7 +96,7 @@ namespace AtmoSync.API.Services
             }
             catch (Exception ex)
             {
-                return new ResponseModel
+                return new ResponseModel<string>
                 {
                     Code = StatusCodes.Status500InternalServerError,
                     Message = ex.Message
@@ -104,13 +104,13 @@ namespace AtmoSync.API.Services
             }
         }
 
-        public async Task<ResponseModel> LoginAsync(LoginDto dto)
+        public async Task<ResponseModel<LoginResponseDto>> LoginAsync(LoginDto dto)
         {
             try
             {
                 if (string.IsNullOrWhiteSpace(dto.Email))
                 {
-                    return new ResponseModel
+                    return new ResponseModel<LoginResponseDto>
                     {
                         Code = StatusCodes.Status400BadRequest,
                         Message = "Email is required."
@@ -119,7 +119,7 @@ namespace AtmoSync.API.Services
 
                 if (string.IsNullOrWhiteSpace(dto.Password))
                 {
-                    return new ResponseModel
+                    return new ResponseModel<LoginResponseDto>
                     {
                         Code = StatusCodes.Status400BadRequest,
                         Message = "Password is required."
@@ -130,7 +130,7 @@ namespace AtmoSync.API.Services
 
                 if (user == null)
                 {
-                    return new ResponseModel
+                    return new ResponseModel<LoginResponseDto>
                     {
                         Code = StatusCodes.Status401Unauthorized,
                         Message = "Invalid email or password."
@@ -141,7 +141,7 @@ namespace AtmoSync.API.Services
 
                 if (!isValidPassword)
                 {
-                    return new ResponseModel
+                    return new ResponseModel<LoginResponseDto>
                     {
                         Code = StatusCodes.Status401Unauthorized,
                         Message = "Invalid email or password."
@@ -150,7 +150,7 @@ namespace AtmoSync.API.Services
 
                 if (user.InActive)
                 {
-                    return new ResponseModel
+                    return new ResponseModel<LoginResponseDto>
                     {
                         Code = StatusCodes.Status403Forbidden,
                         Message = "User account is inactive."
@@ -159,23 +159,23 @@ namespace AtmoSync.API.Services
 
                 string token =_jwtService.GenerateToken(user);
 
-                return new ResponseModel
+                return new ResponseModel<LoginResponseDto>
                 {
                     Code = StatusCodes.Status200OK,
                     Message = "Login successful.",
-                    Data = new
+                    Data  = new LoginResponseDto
                     {
                         UserId = user.Id,
-                        user.FullName,
-                        user.Email,
-                        user.Role,
+                        FullName = user.FullName,
+                        Email = user.Email,
+                        Role = user.Role,
                         Token = token
                     }
                 };
             }
             catch (Exception ex)
             {
-                return new ResponseModel
+                return new ResponseModel<LoginResponseDto>
                 {
                     Code = StatusCodes.Status500InternalServerError,
                     Message = ex.Message

@@ -6,16 +6,16 @@ namespace AtmoSync.API.Interfaces.IServices
 {
     public interface IMQ7SensorService
     {
-        Task<ResponseModel> GetAllAsync();
+        Task<ResponseModel<List<MQ7Sensor>>> GetAllAsync();
 
-        Task<ResponseModel> GetLatestAsync();
+        Task<ResponseModel<MQ7Sensor>> GetLatestAsync();
 
-        Task<ResponseModel> GetLatestReadingsAsync(int count);
+        Task<ResponseModel<List<MQ7Sensor>>> GetLatestReadingsAsync(int count);
 
-        Task<ResponseModel> GetByDateRangeAsync(DateTime fromDate, DateTime toDate);
+        Task<ResponseModel<List<MQ7Sensor>>> GetByDateRangeAsync(DateTime fromDate, DateTime toDate);
 
-        Task<ResponseModel> CreateAsync(MQ7SensorDto dto);
+        Task<ResponseModel<long>> CreateAsync(MQ7SensorDto dto);
 
-        Task<ResponseModel> DeleteAsync(long id);
+        Task<ResponseModel<int>> DeleteAsync(long id);
     }
 }

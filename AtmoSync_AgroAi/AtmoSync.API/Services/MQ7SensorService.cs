@@ -16,13 +16,13 @@ namespace AtmoSync.API.Services
         }
 
         // GET ALL
-        public async Task<ResponseModel> GetAllAsync()
+        public async Task<ResponseModel<List<MQ7Sensor>>> GetAllAsync()
         {
             try
             {
                 var data = await _repository.GetAllAsync();
 
-                return new ResponseModel
+                return new ResponseModel<List<MQ7Sensor>>
                 {
                     Code = StatusCodes.Status200OK,
                     Message = "Data Found",
@@ -31,7 +31,7 @@ namespace AtmoSync.API.Services
             }
             catch (Exception ex)
             {
-                return new ResponseModel
+                return new ResponseModel<List<MQ7Sensor>>
                 {
                     Code = StatusCodes.Status500InternalServerError,
                     Message = ex.Message
@@ -40,7 +40,7 @@ namespace AtmoSync.API.Services
         }
 
         // GET LATEST
-        public async Task<ResponseModel> GetLatestAsync()
+        public async Task<ResponseModel<MQ7Sensor>> GetLatestAsync()
         {
             try
             {
@@ -48,23 +48,23 @@ namespace AtmoSync.API.Services
 
                 if (result == null)
                 {
-                    return new ResponseModel
+                    return new ResponseModel<MQ7Sensor>
                     {
                         Code = StatusCodes.Status404NotFound,
-                        Message = "No latest MQ7 sensor data found."
+                        Message = "No latest sensor data found."
                     };
                 }
 
-                return new ResponseModel
+                return new ResponseModel<MQ7Sensor>
                 {
                     Code = StatusCodes.Status200OK,
-                    Message = "Latest MQ7 data retrieved successfully.",
+                    Message = "Latest data retrieved successfully.",
                     Data = result
                 };
             }
             catch (Exception ex)
             {
-                return new ResponseModel
+                return new ResponseModel<MQ7Sensor>
                 {
                     Code = StatusCodes.Status500InternalServerError,
                     Message = ex.Message
@@ -73,13 +73,13 @@ namespace AtmoSync.API.Services
         }
 
         // GET LAST N READINGS
-        public async Task<ResponseModel> GetLatestReadingsAsync(int count)
+        public async Task<ResponseModel<List<MQ7Sensor>>> GetLatestReadingsAsync(int count)
         {
             try
             {
                 if (count <= 0)
                 {
-                    return new ResponseModel
+                    return new ResponseModel<List<MQ7Sensor>>
                     {
                         Code = StatusCodes.Status400BadRequest,
                         Message = "Count must be greater than zero."
@@ -88,16 +88,7 @@ namespace AtmoSync.API.Services
 
                 var result = await _repository.GetLatestReadingsAsync(count);
 
-                if (result == null || !result.Any())
-                {
-                    return new ResponseModel
-                    {
-                        Code = StatusCodes.Status404NotFound,
-                        Message = "No MQ7sensor data found."
-                    };
-                }
-
-                return new ResponseModel
+                return new ResponseModel<List<MQ7Sensor>>
                 {
                     Code = StatusCodes.Status200OK,
                     Message = "Data retrieved successfully.",
@@ -106,7 +97,7 @@ namespace AtmoSync.API.Services
             }
             catch (Exception ex)
             {
-                return new ResponseModel
+                return new ResponseModel<List<MQ7Sensor>>
                 {
                     Code = StatusCodes.Status500InternalServerError,
                     Message = ex.Message
@@ -114,41 +105,32 @@ namespace AtmoSync.API.Services
             }
         }
 
-        // CREATE
-        public async Task<ResponseModel> CreateAsync(MQ7SensorDto dto)
+        // CREATE 
+        public async Task<ResponseModel<long>> CreateAsync(MQ7SensorDto dto)
         {
             try
             {
                 if (dto.COLevel < 0 || dto.COLevel > 1000)
                 {
-                    return new ResponseModel
+                    return new ResponseModel<long>
                     {
                         Code = StatusCodes.Status400BadRequest,
-                        Message = "Invalid CO Gas Value."
+                        Message = "Invalid Co2 Value."
                     };
                 }
 
                 var result = await _repository.CreateAsync(dto);
 
-                if (result > 0)
+                return new ResponseModel<long>
                 {
-                    return new ResponseModel
-                    {
-                        Code = StatusCodes.Status201Created,
-                        Message = "MQ7 sensor data saved successfully.",
-                        Data = result
-                    };
-                }
-
-                return new ResponseModel
-                {
-                    Code = StatusCodes.Status400BadRequest,
-                    Message = "Failed to save sensor data."
+                    Code = StatusCodes.Status201Created,
+                    Message = "Sensor data saved successfully.",
+                    Data = result
                 };
             }
             catch (Exception ex)
             {
-                return new ResponseModel
+                return new ResponseModel<long>
                 {
                     Code = StatusCodes.Status500InternalServerError,
                     Message = ex.Message
@@ -157,13 +139,13 @@ namespace AtmoSync.API.Services
         }
 
         // DELETE
-        public async Task<ResponseModel> DeleteAsync(long id)
+        public async Task<ResponseModel<int>> DeleteAsync(long id)
         {
             try
             {
                 if (id <= 0)
                 {
-                    return new ResponseModel
+                    return new ResponseModel<int>
                     {
                         Code = StatusCodes.Status400BadRequest,
                         Message = "Invalid sensor Id."
@@ -172,24 +154,16 @@ namespace AtmoSync.API.Services
 
                 var result = await _repository.DeleteAsync(id);
 
-                if (result > 0)
+                return new ResponseModel<int>
                 {
-                    return new ResponseModel
-                    {
-                        Code = StatusCodes.Status200OK,
-                        Message = "Deleted successfully."
-                    };
-                }
-
-                return new ResponseModel
-                {
-                    Code = StatusCodes.Status404NotFound,
-                    Message = "Record not found."
+                    Code = StatusCodes.Status200OK,
+                    Message = "Deleted successfully.",
+                    Data = result
                 };
             }
             catch (Exception ex)
             {
-                return new ResponseModel
+                return new ResponseModel<int>
                 {
                     Code = StatusCodes.Status500InternalServerError,
                     Message = ex.Message
@@ -198,13 +172,13 @@ namespace AtmoSync.API.Services
         }
 
         // DATE RANGE
-        public async Task<ResponseModel> GetByDateRangeAsync(DateTime fromDate, DateTime toDate)
+        public async Task<ResponseModel<List<MQ7Sensor>>> GetByDateRangeAsync(DateTime fromDate, DateTime toDate)
         {
             try
             {
                 if (fromDate > toDate)
                 {
-                    return new ResponseModel
+                    return new ResponseModel<List<MQ7Sensor>>
                     {
                         Code = StatusCodes.Status400BadRequest,
                         Message = "FromDate cannot be greater than ToDate."
@@ -213,16 +187,7 @@ namespace AtmoSync.API.Services
 
                 var result = await _repository.GetByDateRangeAsync(fromDate, toDate);
 
-                if (result == null || !result.Any())
-                {
-                    return new ResponseModel
-                    {
-                        Code = StatusCodes.Status404NotFound,
-                        Message = "No MQ7 data found in this date range."
-                    };
-                }
-
-                return new ResponseModel
+                return new ResponseModel<List<MQ7Sensor>>
                 {
                     Code = StatusCodes.Status200OK,
                     Message = "Data retrieved successfully.",
@@ -231,7 +196,7 @@ namespace AtmoSync.API.Services
             }
             catch (Exception ex)
             {
-                return new ResponseModel
+                return new ResponseModel<List<MQ7Sensor>>
                 {
                     Code = StatusCodes.Status500InternalServerError,
                     Message = ex.Message

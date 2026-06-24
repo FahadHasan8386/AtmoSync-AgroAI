@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace AtmoSync.Shared
 {
-    public class ResponseModel
+    public class ResponseModel<T>
     {
         public int Code { get; set; }
         public string Message { get; set; } = string.Empty;
-        public object? Data { get; set; }
+        public T? Data { get; set; }
     }
 }

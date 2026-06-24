@@ -16,13 +16,13 @@ public class DHTSensorService : IDHTSensorService
     }
 
     // GET ALL
-    public async Task<ResponseModel> GetAllAsync()
+    public async Task<ResponseModel<List<DHTSensor>>> GetAllAsync()
     {
         try
         {
             var data = await _repository.GetAllAsync();
 
-            return new ResponseModel
+            return new ResponseModel<List<DHTSensor>>
             {
                 Code = StatusCodes.Status200OK,
                 Message = "Data Found",
@@ -31,7 +31,7 @@ public class DHTSensorService : IDHTSensorService
         }
         catch (Exception ex)
         {
-            return new ResponseModel
+            return new ResponseModel<List<DHTSensor>>
             {
                 Code = StatusCodes.Status500InternalServerError,
                 Message = ex.Message
@@ -40,7 +40,7 @@ public class DHTSensorService : IDHTSensorService
     }
 
     // GET LATEST 
-    public async Task<ResponseModel> GetLatestAsync()
+    public async Task<ResponseModel<DHTSensor>> GetLatestAsync()
     {
         try
         {
@@ -48,14 +48,14 @@ public class DHTSensorService : IDHTSensorService
 
             if (result == null)
             {
-                return new ResponseModel
+                return new ResponseModel<DHTSensor>
                 {
                     Code = StatusCodes.Status404NotFound,
                     Message = "No latest sensor data found."
                 };
             }
 
-            return new ResponseModel
+            return new ResponseModel<DHTSensor>
             {
                 Code = StatusCodes.Status200OK,
                 Message = "Latest data retrieved successfully.",
@@ -64,7 +64,7 @@ public class DHTSensorService : IDHTSensorService
         }
         catch (Exception ex)
         {
-            return new ResponseModel
+            return new ResponseModel<DHTSensor>
             {
                 Code = StatusCodes.Status500InternalServerError,
                 Message = ex.Message
@@ -73,13 +73,13 @@ public class DHTSensorService : IDHTSensorService
     }
 
     // GET LAST N READINGS
-    public async Task<ResponseModel> GetLatestReadingsAsync(int count)
+    public async Task<ResponseModel<List<DHTSensor>>> GetLatestReadingsAsync(int count)
     {
         try
         {
             if (count <= 0)
             {
-                return new ResponseModel
+                return new ResponseModel<List<DHTSensor>>
                 {
                     Code = StatusCodes.Status400BadRequest,
                     Message = "Count must be greater than zero."
@@ -88,16 +88,7 @@ public class DHTSensorService : IDHTSensorService
 
             var result = await _repository.GetLatestReadingsAsync(count);
 
-            if (result == null || !result.Any())
-            {
-                return new ResponseModel
-                {
-                    Code = StatusCodes.Status404NotFound,
-                    Message = "No sensor data found."
-                };
-            }
-
-            return new ResponseModel
+            return new ResponseModel<List<DHTSensor>>
             {
                 Code = StatusCodes.Status200OK,
                 Message = "Data retrieved successfully.",
@@ -106,7 +97,7 @@ public class DHTSensorService : IDHTSensorService
         }
         catch (Exception ex)
         {
-            return new ResponseModel
+            return new ResponseModel<List<DHTSensor>>
             {
                 Code = StatusCodes.Status500InternalServerError,
                 Message = ex.Message
@@ -115,13 +106,13 @@ public class DHTSensorService : IDHTSensorService
     }
 
     // CREATE 
-    public async Task<ResponseModel> CreateAsync(DHTSensorDto dto)
+    public async Task<ResponseModel<long>> CreateAsync(DHTSensorDto dto)
     {
         try
         {
             if (dto.Temperature < -20 || dto.Temperature > 50)
             {
-                return new ResponseModel
+                return new ResponseModel<long>
                 {
                     Code = StatusCodes.Status400BadRequest,
                     Message = "Invalid Temperature Value."
@@ -130,25 +121,16 @@ public class DHTSensorService : IDHTSensorService
 
             var result = await _repository.CreateAsync(dto);
 
-            if (result > 0)
+            return new ResponseModel<long>
             {
-                return new ResponseModel
-                {
-                    Code = StatusCodes.Status201Created,
-                    Message = "Sensor data saved successfully.",
-                    Data = result
-                };
-            }
-
-            return new ResponseModel
-            {
-                Code = StatusCodes.Status400BadRequest,
-                Message = "Failed to save sensor data."
+                Code = StatusCodes.Status201Created,
+                Message = "Sensor data saved successfully.",
+                Data = result
             };
         }
         catch (Exception ex)
         {
-            return new ResponseModel
+            return new ResponseModel<long>
             {
                 Code = StatusCodes.Status500InternalServerError,
                 Message = ex.Message
@@ -157,13 +139,13 @@ public class DHTSensorService : IDHTSensorService
     }
 
     // DELETE 
-    public async Task<ResponseModel> DeleteAsync(long id)
+    public async Task<ResponseModel<int>> DeleteAsync(long id)
     {
         try
         {
             if (id <= 0)
             {
-                return new ResponseModel
+                return new ResponseModel<int>
                 {
                     Code = StatusCodes.Status400BadRequest,
                     Message = "Invalid sensor Id."
@@ -172,24 +154,16 @@ public class DHTSensorService : IDHTSensorService
 
             var result = await _repository.DeleteAsync(id);
 
-            if (result > 0)
+            return new ResponseModel<int>
             {
-                return new ResponseModel
-                {
-                    Code = StatusCodes.Status200OK,
-                    Message = "Deleted successfully."
-                };
-            }
-
-            return new ResponseModel
-            {
-                Code = StatusCodes.Status404NotFound,
-                Message = "Record not found."
+                Code = StatusCodes.Status200OK,
+                Message = "Deleted successfully.",
+                Data = result
             };
         }
         catch (Exception ex)
         {
-            return new ResponseModel
+            return new ResponseModel<int>
             {
                 Code = StatusCodes.Status500InternalServerError,
                 Message = ex.Message
@@ -198,13 +172,13 @@ public class DHTSensorService : IDHTSensorService
     }
 
     // GET BY DATE RANGE 
-    public async Task<ResponseModel> GetByDateRangeAsync(DateTime fromDate, DateTime toDate)
+    public async Task<ResponseModel<List<DHTSensor>>> GetByDateRangeAsync(DateTime fromDate,DateTime toDate)
     {
         try
         {
             if (fromDate > toDate)
             {
-                return new ResponseModel
+                return new ResponseModel<List<DHTSensor>>
                 {
                     Code = StatusCodes.Status400BadRequest,
                     Message = "FromDate cannot be greater than ToDate."
@@ -213,16 +187,7 @@ public class DHTSensorService : IDHTSensorService
 
             var result = await _repository.GetByDateRangeAsync(fromDate, toDate);
 
-            if (result == null || !result.Any())
-            {
-                return new ResponseModel
-                {
-                    Code = StatusCodes.Status404NotFound,
-                    Message = "No data found in this date range."
-                };
-            }
-
-            return new ResponseModel
+            return new ResponseModel<List<DHTSensor>>
             {
                 Code = StatusCodes.Status200OK,
                 Message = "Data retrieved successfully.",
@@ -231,7 +196,7 @@ public class DHTSensorService : IDHTSensorService
         }
         catch (Exception ex)
         {
-            return new ResponseModel
+            return new ResponseModel<List<DHTSensor>>
             {
                 Code = StatusCodes.Status500InternalServerError,
                 Message = ex.Message

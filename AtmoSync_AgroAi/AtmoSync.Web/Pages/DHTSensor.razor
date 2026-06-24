@@ -78,7 +78,6 @@
         }
 
     </div>
-    ```
 
 </div>
 
@@ -101,12 +100,12 @@ private bool IsLoading { get; set; }
     {
         var response = await DHT22ApiService.GetAllAsync();
 
-        if (response?.Data != null)
+        if (response != null)
         {
             DHTSensorViewModel =
                 JsonSerializer.Deserialize<List<DHTSensorDto>>
                 (
-                    JsonSerializer.Serialize(response.Data)
+                    JsonSerializer.Serialize(response)
                 ) ?? new();
 
             DHTSensorViewModel =

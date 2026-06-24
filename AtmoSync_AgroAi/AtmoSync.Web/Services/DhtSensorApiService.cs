@@ -1,97 +1,91 @@
 ﻿using AtmoSync.Shared;
+using AtmoSync.Shared.Models;
+using AtmoSync.Shared.Models.DtoModels;
 using System.Net.Http.Json;
 
-namespace AtmoSync.Web.Services;
-
-public class DhtSensorApiService
+namespace AtmoSync.Web.Services
 {
-    private readonly HttpClient _httpClient;
-
-    private const string BaseRoute = "api/DHTSensor";
-
-    public DhtSensorApiService(HttpClient httpClient)
+    public class DhtSensorApiService
     {
-        _httpClient = httpClient;
-    }
+        private readonly HttpClient _httpClient;
 
-    public async Task<ResponseModel?> GetAllAsync()
-    {
-        try
+        public DhtSensorApiService(HttpClient httpClient)
         {
-            return await _httpClient.GetFromJsonAsync<ResponseModel>(BaseRoute);
+            _httpClient = httpClient;
         }
-        catch
-        {
-            return null;
-        }
-    }
 
-    public async Task<ResponseModel?> GetLatestAsync()
-    {
-        try
+        // GET ALL
+        public async Task<List<DHTSensorDto>> GetAllAsync()
         {
-            return await _httpClient.GetFromJsonAsync<ResponseModel>($"{BaseRoute}/latest");
+            try
+            {
+                return await _httpClient.GetFromJsonAsync<List<DHTSensorDto>>("DHTSensor");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return null;
+            }
         }
-        catch
-        {
-            return null;
-        }
-    }
 
-    public async Task<ResponseModel?> GetLatestReadingsAsync(int count)
-    {
-        try
+        // GET LATEST
+        public async Task<DHTSensorDto> GetLatestAsync()
         {
-            return await _httpClient.GetFromJsonAsync<ResponseModel>($"{BaseRoute}/latest/{count}");
+            try
+            {
+                return await _httpClient.GetFromJsonAsync<DHTSensorDto>("DHTSensor/latest");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return null;
+            }
         }
-        catch
-        {
-            return null;
-        }
-    }
 
-    public async Task<ResponseModel?> GetByDateRangeAsync(DateTime fromDate, DateTime toDate)
-    {
-        try
+        // GET LAST N
+        public async Task<List<DHTSensorDto>> GetLatestReadingsAsync(int count)
         {
-            return await _httpClient.GetFromJsonAsync<ResponseModel>(
-                $"{BaseRoute}/range?fromDate={fromDate:yyyy-MM-dd}&toDate={toDate:yyyy-MM-dd}");
+            try
+            {
+                return await _httpClient.GetFromJsonAsync<List<DHTSensorDto>>($"DHTSensor/latest/{count}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return null;
+            }
         }
-        catch
-        {
-            return null;
-        }
-    }
 
-    public async Task<bool> CreateAsync(double temperature, double humidity)
-    {
-        var request = new
+        // CREATE
+        public async Task<bool> CreateAsync(DHTSensorDto dto)
         {
-            Temperature = temperature,
-            Humidity = humidity
-        };
+            try
+            {
+                var response = await _httpClient.PostAsJsonAsync("DHTSensor", dto);
 
-        try
-        {
-            var response = await _httpClient.PostAsJsonAsync(BaseRoute, request);
-            return response.IsSuccessStatusCode;
+                return response.IsSuccessStatusCode;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return false;
+            }
         }
-        catch
-        {
-            return false;
-        }
-    }
 
-    public async Task<bool> DeleteAsync(long id)
-    {
-        try
+        // DELETE
+        public async Task<bool> DeleteAsync(long id)
         {
-            var response = await _httpClient.DeleteAsync($"{BaseRoute}/{id}");
-            return response.IsSuccessStatusCode;
-        }
-        catch
-        {
-            return false;
+            try
+            {
+                var response = await _httpClient.DeleteAsync($"DHTSensor/{id}");
+
+                return response.IsSuccessStatusCode;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return false;
+            }
         }
     }
 }

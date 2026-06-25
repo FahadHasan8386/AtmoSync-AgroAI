@@ -72,16 +72,17 @@ namespace AtmoSync.Web.Services
         }
 
         //Filter
-        public async Task<ResponseModel<List<DHTSensorDto>>?> GetByDateRangeAsync( DateTime fromDate,DateTime toDate)
+        public async Task<ResponseModel<List<DHTSensorDto>>?> GetByDateRangeAsync(DateTime fromDate,DateTime toDate)
         {
             try
             {
-                var response = $"DHTSensor/range??fromDate={fromDate:yyyy-MM-dd} & toDate={toDate:yyyy-MM-dd}";
+                var url = $"DHTSensor/range?fromDate={fromDate:yyyy-MM-dd}&toDate={toDate:yyyy-MM-dd}";
 
-                return await _httpClient.GetFromJsonAsync<ResponseModel<List<DHTSensorDto>>>(response);
+                return await _httpClient.GetFromJsonAsync<ResponseModel<List<DHTSensorDto>>>(url);
             }
-            catch (Exception )
+            catch (Exception ex)
             {
+                Console.WriteLine(ex.Message);
                 return null;
             }
         }

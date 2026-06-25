@@ -13,6 +13,46 @@
 
     <div class="row g-4">
 
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+
+                <div class="row align-items-end">
+
+                    <div class="col-md-4">
+                        <label class="form-label">
+                            From Date
+                        </label>
+
+                        <InputDate class="form-control"
+                                   @bind-Value="FromDate" />
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label">
+                            To Date
+                        </label>
+
+                        <InputDate class="form-control"
+                                   @bind-Value="ToDate" />
+                    </div>
+
+                    <div class="col-md-4">
+                        <button class="btn btn-primary me-2"
+                                @onclick="FilterByDate">
+                            Search
+                        </button>
+
+                        <button class="btn btn-outline-secondary"
+                                @onclick="LoadAllData">
+                            Reset
+                        </button>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+
         <!-- Latest Sensor -->
         <div class="col-lg-6">
             <div class="card border-0 shadow-sm h-100">
@@ -217,10 +257,12 @@
 
 @code {
 
+    private DateTime FromDate = DateTime.Today.AddDays(-7);
+    private DateTime ToDate = DateTime.Today;
+
     private bool IsLoading = true;
 
     private List<DHTSensorDto> Sensors = new();
-
     private List<DHTSensorDto> RecentReadings = new();
 
     private DHTSensorDto? LatestSensor;
@@ -234,17 +276,17 @@
     {
         IsLoading = true;
 
-        // Get All Data
+        // Get All Sensors
         var allResponse = await SensorService.GetAllAsync();
 
-        if (allResponse?.Code == 200)
+        if (allResponse?.Code == 200 && allResponse.Data != null)
         {
             Sensors = allResponse.Data
                 .OrderByDescending(x => x.CreatedAt)
                 .ToList();
         }
 
-        // Latest Reading
+        // Latest Sensor Reading
         var latestResponse = await SensorService.GetLatestAsync();
 
         if (latestResponse?.Code == 200)
@@ -252,10 +294,10 @@
             LatestSensor = latestResponse.Data;
         }
 
-        // Last 5 Readings
+        // Recent 5 Readings
         var recentResponse = await SensorService.GetLatestReadingsAsync(5);
 
-        if (recentResponse?.Code == 200)
+        if (recentResponse?.Code == 200 && recentResponse.Data != null)
         {
             RecentReadings = recentResponse.Data;
         }
@@ -273,4 +315,32 @@
         }
     }
 
+    private async Task FilterByDate()
+    {
+        IsLoading = true;
+
+        var response = await SensorService
+            .GetByDateRangeAsync(FromDate, ToDate);
+
+        if (response?.Code == 200 && response.Data != null)
+        {
+            Sensors = response.Data
+                .OrderByDescending(x => x.CreatedAt)
+                .ToList();
+        }
+        else
+        {
+            Sensors = new();
+        }
+
+        IsLoading = false;
+    }
+
+    private async Task LoadAllData()
+    {
+        FromDate = DateTime.Today.AddDays(-7);
+        ToDate = DateTime.Today;
+
+        await LoadData();
+    }
 }

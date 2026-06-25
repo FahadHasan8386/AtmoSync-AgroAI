@@ -93,19 +93,20 @@ namespace AtmoSync.API.Repository
         }
 
         // GET BY DATE RANGE
-        public async Task<List<DHTSensor>> GetByDateRangeAsync(DateTime fromDate, DateTime toDate)
+        public async Task<List<DHTSensor>> GetByDateRangeAsync(DateTime fromDate,DateTime toDate)
         {
-            const string sql = @"
-                SELECT *
-                FROM DHTSensor
-                WHERE CreatedAt BETWEEN @FromDate AND @ToDate
-                ORDER BY CreatedAt DESC";
+            const string sql = @"SELECT *
+                                FROM DHTSensor
+                                WHERE CreatedAt >= @FromDate
+                                AND CreatedAt < @ToDate
+                                ORDER BY CreatedAt DESC";
 
-            var result = await _connection.QueryAsync<DHTSensor>(sql, new
-            {
-                FromDate = fromDate,
-                ToDate = toDate
-            });
+            var result = await _connection.QueryAsync<DHTSensor>(sql,
+                new
+                {
+                    FromDate = fromDate.Date,
+                    ToDate = toDate.Date.AddDays(1)
+                });
 
             return result.ToList();
         }

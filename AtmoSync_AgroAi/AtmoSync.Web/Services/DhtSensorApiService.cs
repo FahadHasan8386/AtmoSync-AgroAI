@@ -65,9 +65,8 @@ namespace AtmoSync.Web.Services
 
                 return await response.Content.ReadFromJsonAsync<ResponseModel<long>>();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                Console.WriteLine(ex.Message);
                 return null;
             }
         }
@@ -81,7 +80,7 @@ namespace AtmoSync.Web.Services
 
                 return await _httpClient.GetFromJsonAsync<ResponseModel<List<DHTSensorDto>>>(response);
             }
-            catch(Exception ex)
+            catch (Exception )
             {
                 return null;
             }
@@ -96,9 +95,8 @@ namespace AtmoSync.Web.Services
 
                 return await response.Content.ReadFromJsonAsync<ResponseModel<int>>();
             }
-            catch (Exception ex)
+            catch (Exception )
             {
-                Console.WriteLine(ex.Message);
                 return null;
             }
         }

@@ -5,165 +5,238 @@
 
 @inject DhtSensorApiService SensorService
 
-<div class="container py-4">
+<div class="container-fluid py-4">
 
-    <h2 class="fw-bold mb-4">
-        🌡️ DHT22 Sensor Dashboard
-    </h2>
-
-    <div class="row g-4">
-
-        <div class="card shadow-sm mb-4">
-            <div class="card-body">
-
-                <div class="row align-items-end">
-
-                    <div class="col-md-4">
-                        <label class="form-label">
-                            From Date
-                        </label>
-
-                        <InputDate class="form-control"
-                                   @bind-Value="FromDate" />
-                    </div>
-
-                    <div class="col-md-4">
-                        <label class="form-label">
-                            To Date
-                        </label>
-
-                        <InputDate class="form-control"
-                                   @bind-Value="ToDate" />
-                    </div>
-
-                    <div class="col-md-4">
-                        <button class="btn btn-primary me-2"
-                                @onclick="FilterByDate">
-                            Search
-                        </button>
-
-                        <button class="btn btn-outline-secondary"
-                                @onclick="LoadAllData">
-                            Reset
-                        </button>
-                    </div>
-
-                </div>
-
-            </div>
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold mb-1">
+                🌡️ DHT22 IoT Monitoring Dashboard
+            </h2>
+            <p class="text-muted mb-0">
+                Real-time Temperature & Humidity Monitoring
+            </p>
         </div>
 
-        <!-- Latest Sensor -->
-        <div class="col-lg-6">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-header bg-primary text-white">
-                    Latest Sensor Reading
-                </div>
+        <button class="btn btn-outline-primary"
+                @onclick="LoadAllData">
+            <i class="bi bi-arrow-clockwise"></i>
+            Refresh
+        </button>
+    </div>
 
+    <!-- Statistics -->
+    <div class="row g-4 mb-4">
+
+        <div class="col-lg-3 col-md-6">
+            <div class="card bg-danger text-white border-0 shadow h-100">
                 <div class="card-body">
-
-                    @if (LatestSensor is not null)
-                    {
-                        <div class="row text-center">
-
-                            <div class="col-6">
-                                <h3 class="text-danger">
-                                    @LatestSensor.Temperature°C
-                                </h3>
-
-                                <small class="text-muted">
-                                    Temperature
-                                </small>
-                            </div>
-
-                            <div class="col-6">
-                                <h3 class="text-info">
-                                    @LatestSensor.Humidity%
-                                </h3>
-
-                                <small class="text-muted">
-                                    Humidity
-                                </small>
-                            </div>
-
-                        </div>
-
-                        <hr />
-
-                        <p class="mb-1">
-                            <strong>Created By:</strong>
-                            @LatestSensor.CreatedBy
-                        </p>
-
-                        <p class="mb-0 text-muted">
-                            @LatestSensor.CreatedAt.ToString("dd MMM yyyy hh:mm tt")
-                        </p>
-                    }
-                    else
-                    {
-                        <p>No data found.</p>
-                    }
-
+                    <small class="text-white-50">Latest Temperature</small>
+                    <h2 class="fw-bold mt-2">
+                        🌡️ @(LatestSensor?.Temperature ?? 0)°C
+                    </h2>
                 </div>
             </div>
         </div>
 
-
-        <!-- Last 5 Readings -->
-        <div class="col-lg-6">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-header bg-success text-white">
-                    Recent Readings
-                </div>
-
+        <div class="col-lg-3 col-md-6">
+            <div class="card bg-primary text-white border-0 shadow h-100">
                 <div class="card-body">
+                    <small class="text-white-50">Latest Humidity</small>
+                    <h2 class="fw-bold mt-2">
+                        💧 @(LatestSensor?.Humidity ?? 0)%
+                    </h2>
+                </div>
+            </div>
+        </div>
 
-                    @if (RecentReadings.Any())
-                    {
-                        @foreach (var item in RecentReadings)
-                        {
-                            <div class="d-flex justify-content-between align-items-center border-bottom py-2">
+        <div class="col-lg-3 col-md-6">
+            <div class="card bg-success text-white border-0 shadow h-100">
+                <div class="card-body">
+                    <small class="text-white-50">Total Records</small>
+                    <h2 class="fw-bold mt-2">
+                        📊 @Sensors.Count
+                    </h2>
+                </div>
+            </div>
+        </div>
 
-                                <div>
-                                    <span class="badge bg-danger">
-                                        @item.Temperature°C
-                                    </span>
+        <div class="col-lg-3 col-md-6">
+            <div class="card bg-warning border-0 shadow h-100">
+                <div class="card-body">
+                    <small>Latest Update</small>
 
-                                    <span class="badge bg-info">
-                                        @item.Humidity%
-                                    </span>
-                                </div>
+                    <h6 class="fw-bold mt-2">
+                        @LatestSensor?.CreatedAt.ToString("dd MMM yyyy")
+                    </h6>
 
-                                <small class="text-muted">
-                                    @item.CreatedAt.ToString("dd MMM HH:mm")
-                                </small>
-
-                            </div>
-                        }
-                    }
-                    else
-                    {
-                        <p>No recent readings available.</p>
-                    }
-
+                    <small>
+                        @LatestSensor?.CreatedAt.ToString("hh:mm tt")
+                    </small>
                 </div>
             </div>
         </div>
 
     </div>
 
-    <!-- All Sensors Table -->
-    <div class="card border-0 shadow-sm mt-4">
+    <!-- Date Filter -->
+    <div class="card shadow border-0 mb-4">
 
-        <div class="card-header bg-dark text-white">
-            All Sensor Records
+        <div class="card-header bg-secondary text-white">
+            <h5 class="mb-0">
+                <i class="bi bi-calendar-range me-2"></i>
+                Filter By Date Range
+            </h5>
+        </div>
+
+        <div class="card-body">
+
+            <div class="row g-3 align-items-end">
+
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold">
+                        From Date
+                    </label>
+
+                    <InputDate class="form-control"
+                               @bind-Value="FromDate" />
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold">
+                        To Date
+                    </label>
+
+                    <InputDate class="form-control"
+                               @bind-Value="ToDate" />
+                </div>
+
+                <div class="col-md-4">
+
+                    <button class="btn btn-primary me-2"
+                            @onclick="FilterByDate">
+                        <i class="bi bi-search"></i>
+                        Search
+                    </button>
+
+                    <button class="btn btn-outline-secondary"
+                            @onclick="LoadAllData">
+                        Reset
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Recent Readings -->
+    <div class="card shadow border-0 mb-4">
+
+        <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">
+                <i class="bi bi-clock-history me-2"></i>
+                Recent Sensor Readings
+            </h5>
+
+            <span class="badge bg-light text-dark">
+                Last 5 Records
+            </span>
+        </div>
+
+        <div class="table-responsive">
+
+            <table class="table table-hover table-striped align-middle mb-0">
+
+                <thead class="table-dark">
+                    <tr>
+                        <th>#</th>
+                        <th>Temperature</th>
+                        <th>Humidity</th>
+                        <th>Created By</th>
+                        <th>Recorded At</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    @if (RecentReadings.Any())
+                    {
+                        int recentIndex = 1;
+
+                        @foreach (var item in RecentReadings)
+                        {
+                            <tr>
+
+                                <td>
+                                    <span class="badge bg-secondary">
+                                        @recentIndex
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <span class="badge bg-danger fs-6">
+                                        🌡️ @item.Temperature°C
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <span class="badge bg-primary fs-6">
+                                        💧 @item.Humidity%
+                                    </span>
+                                </td>
+
+                                <td>
+                                    @item.CreatedBy
+                                </td>
+
+                                <td class="text-muted">
+                                    @item.CreatedAt.ToString("dd MMM yyyy hh:mm tt")
+                                </td>
+
+                            </tr>
+
+                            recentIndex++;
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="5" class="text-center py-4 text-muted">
+                                No recent readings available
+                            </td>
+                        </tr>
+                    }
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+    <!-- All Records -->
+    <div class="card shadow border-0">
+
+        <div class="card-header bg-dark text-white d-flex justify-content-between">
+            <h5 class="mb-0">
+                <i class="bi bi-database-fill me-2"></i>
+                Sensor Records
+            </h5>
+
+            <span class="badge bg-light text-dark">
+                @Sensors.Count Records
+            </span>
         </div>
 
         <div class="card-body">
 
             @if (IsLoading)
             {
-                <div class="text-center py-4">
+                <div class="text-center py-5">
                     <div class="spinner-border text-primary"></div>
                 </div>
             }
@@ -181,7 +254,7 @@
                                 <th>Humidity</th>
                                 <th>Created By</th>
                                 <th>Created At</th>
-                                <th></th>
+                                <th>Action</th>
                             </tr>
                         </thead>
 
@@ -204,13 +277,13 @@
                                         </td>
 
                                         <td>
-                                            <span class="text-danger fw-bold">
+                                            <span class="badge bg-danger">
                                                 @item.Temperature°C
                                             </span>
                                         </td>
 
                                         <td>
-                                            <span class="text-primary fw-bold">
+                                            <span class="badge bg-primary">
                                                 @item.Humidity%
                                             </span>
                                         </td>
@@ -218,13 +291,13 @@
                                         <td>@item.CreatedBy</td>
 
                                         <td>
-                                            @item.CreatedAt.ToString("dd MMM yyyy")
+                                            @item.CreatedAt.ToString("dd MMM yyyy hh:mm tt")
                                         </td>
 
                                         <td>
                                             <button class="btn btn-sm btn-outline-danger"
                                                     @onclick="() => DeleteSensor(item.Id)">
-                                                Delete
+                                                <i class="bi bi-trash"></i>
                                             </button>
                                         </td>
 
@@ -236,7 +309,8 @@
                             else
                             {
                                 <tr>
-                                    <td colspan="7" class="text-center text-muted py-4">
+                                    <td colspan="7"
+                                        class="text-center py-4 text-muted">
                                         No sensor data found
                                     </td>
                                 </tr>
@@ -276,7 +350,6 @@
     {
         IsLoading = true;
 
-        // Get All Sensors
         var allResponse = await SensorService.GetAllAsync();
 
         if (allResponse?.Code == 200 && allResponse.Data != null)
@@ -286,7 +359,6 @@
                 .ToList();
         }
 
-        // Latest Sensor Reading
         var latestResponse = await SensorService.GetLatestAsync();
 
         if (latestResponse?.Code == 200)
@@ -294,7 +366,6 @@
             LatestSensor = latestResponse.Data;
         }
 
-        // Recent 5 Readings
         var recentResponse = await SensorService.GetLatestReadingsAsync(5);
 
         if (recentResponse?.Code == 200 && recentResponse.Data != null)
@@ -303,16 +374,6 @@
         }
 
         IsLoading = false;
-    }
-
-    private async Task DeleteSensor(long id)
-    {
-        var response = await SensorService.DeleteAsync(id);
-
-        if (response?.Code == 200)
-        {
-            await LoadData();
-        }
     }
 
     private async Task FilterByDate()
@@ -334,6 +395,16 @@
         }
 
         IsLoading = false;
+    }
+
+    private async Task DeleteSensor(long id)
+    {
+        var response = await SensorService.DeleteAsync(id);
+
+        if (response?.Code == 200)
+        {
+            await LoadData();
+        }
     }
 
     private async Task LoadAllData()

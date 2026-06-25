@@ -72,6 +72,21 @@ namespace AtmoSync.Web.Services
             }
         }
 
+        //Filter
+        public async Task<ResponseModel<List<DHTSensorDto>>?> GetByDateRangeAsync( DateTime fromDate,DateTime toDate)
+        {
+            try
+            {
+                var response = $"DHTSensor/range??fromDate={fromDate:yyyy-MM-dd} & toDate={toDate:yyyy-MM-dd}";
+
+                return await _httpClient.GetFromJsonAsync<ResponseModel<List<DHTSensorDto>>>(response);
+            }
+            catch(Exception ex)
+            {
+                return null;
+            }
+        }
+
         // DELETE
         public async Task<ResponseModel<int>?> DeleteAsync(long id)
         {

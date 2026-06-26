@@ -16,5 +16,7 @@ namespace AtmoSync.API.Interfaces.IRepositories
         Task<int> DeleteAsync(long id);
 
         Task<List<DHTSensor>> GetByDateRangeAsync(DateTime fromDate, DateTime toDate);
+
+        Task<int> UpdateStatusAsync(int id, bool inActive);
     }
 }

@@ -82,6 +82,23 @@ namespace AtmoSync.API.Repository
             return await _connection.ExecuteScalarAsync<long>(sql, dto);
         }
 
+        public async Task<int> UpdateStatusAsync(long id , bool inActive)
+        {
+            const string sql = @"UPDATE DHTSensor SET
+                                 InActive = @InActive,
+                                    ModifiedAt = @ModifiedAt,
+                                    ModifiedBy = @ModifiedBy
+                                WHERE Id = @Id";
+            return await _connection.ExecuteAsync(sql, new
+            {
+                Id = id,
+                InActive = inActive,
+                ModifiedAt = DateTime.UtcNow,
+                ModifiedBy = "Admin"
+            });
+        }
+
+
         // DELETE
         public async Task<int> DeleteAsync(long id)
         {

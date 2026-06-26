@@ -18,18 +18,16 @@ namespace AtmoSync.API.Repository
         // GET ALL
         public async Task<List<DHTSensor>> GetAllAsync()
         {
-            const string sql = @"
-                SELECT
-                    Id,
-                    Temperature,
-                    Humidity,
-                    CreatedBy,
-                    CreatedAt,
-                    InActive,
-                    ModifiedBy,
-                    ModifiedAt
-                FROM DHTSensor
-                ORDER BY CreatedAt DESC";
+            const string sql = @"SELECT Id,
+                                Temperature,
+                                Humidity,
+                                CreatedBy,
+                                CreatedAt,
+                                InActive,
+                                ModifiedBy,
+                                ModifiedAt
+                            FROM DHTSensor
+                            ORDER BY CreatedAt DESC";
 
             var result = await _connection.QueryAsync<DHTSensor>(sql);
             return result.ToList();
@@ -39,9 +37,9 @@ namespace AtmoSync.API.Repository
         public async Task<DHTSensor?> GetLatestAsync()
         {
             const string sql = @"
-                SELECT TOP 1 *
-                FROM DHTSensor
-                ORDER BY CreatedAt DESC";
+                                SELECT TOP 1 *
+                                FROM DHTSensor
+                                ORDER BY CreatedAt DESC";
 
             return await _connection.QueryFirstOrDefaultAsync<DHTSensor>(sql);
         }
@@ -49,18 +47,17 @@ namespace AtmoSync.API.Repository
         // GET LAST N READINGS
         public async Task<List<DHTSensor>> GetLatestReadingsAsync(int count)
         {
-            const string sql = @"
-                SELECT TOP (@Count)
-                    Id,
-                    Temperature,
-                    Humidity,
-                    CreatedBy,
-                    CreatedAt,
-                    InActive,
-                    ModifiedBy,
-                    ModifiedAt
-                FROM DHTSensor
-                ORDER BY CreatedAt DESC";
+            const string sql = @"SELECT TOP (@Count)
+                                Id,
+                                Temperature,
+                                Humidity,
+                                CreatedBy,
+                                CreatedAt,
+                                InActive,
+                                ModifiedBy,
+                                ModifiedAt
+                            FROM DHTSensor
+                            ORDER BY CreatedAt DESC";
 
             var result = await _connection.QueryAsync<DHTSensor>(
                 sql,
@@ -72,12 +69,11 @@ namespace AtmoSync.API.Repository
         // CREATE
         public async Task<long> CreateAsync(DHTSensorDto dto)
         {
-            const string sql = @"
-                INSERT INTO DHTSensor
-                    (Temperature, Humidity, CreatedBy, CreatedAt, InActive)
-                OUTPUT INSERTED.Id
-                VALUES
-                    (@Temperature, @Humidity, @CreatedBy, @CreatedAt, @InActive);";
+            const string sql = @"INSERT INTO DHTSensor
+                                (Temperature, Humidity, CreatedBy, CreatedAt, InActive)
+                            OUTPUT INSERTED.Id
+                            VALUES
+                                (@Temperature, @Humidity, @CreatedBy, @CreatedAt, @InActive);";
 
             return await _connection.ExecuteScalarAsync<long>(sql, dto);
         }

@@ -287,29 +287,22 @@
                                         </td>
 
                                         <td>
-                                            <div class="btn-group">
+                                            <button class="btn btn-sm btn-outline-success me-1"
+                                                    disabled="@(!item.InActive)"
+                                                    @onclick="() => ChangeStatus(item.Id, false)">
+                                                Activate
+                                            </button>
 
-                                                @if (item.InActive)
-                                                {
-                                                    <button class="btn btn-success btn-sm"
-                                                            @onclick="() => ChangeStatus(item.Id, false)">
-                                                        <i class="bi bi-check-circle-fill"></i>
-                                                    </button>
-                                                }
-                                                else
-                                                {
-                                                    <button class="btn btn-warning btn-sm text-dark"
-                                                            @onclick="() => ChangeStatus(item.Id, true)">
-                                                        <i class="bi bi-pause-circle-fill"></i>
-                                                    </button>
-                                                }
+                                            <button class="btn btn-sm btn-outline-warning me-1"
+                                                    disabled="@(item.InActive)"
+                                                    @onclick="() => ChangeStatus(item.Id, true)">
+                                                Deactivate
+                                            </button>
 
-                                                <button class="btn btn-danger btn-sm"
-                                                        @onclick="() => DeleteSensor(item.Id)">
-                                                    <i class="bi bi-trash-fill"></i>
-                                                </button>
-
-                                            </div>
+                                            <button class="btn btn-sm btn-outline-danger"
+                                                    @onclick="() => DeleteSensor(item.Id)">
+                                                Delete
+                                            </button>
                                         </td>
 
                                     </tr>
@@ -401,6 +394,16 @@
         IsLoading = false;
     }
 
+    private async Task ActivateSensor(long id)
+    {
+        await ChangeStatus(id, false);
+    }
+
+    private async Task DeactivateSensor(long id)
+    {
+        await ChangeStatus(id, true);
+    }
+
     private async Task ChangeStatus(long id, bool inActive)
     {
         var result = await SensorService.UpdateStatusAsync(
@@ -422,5 +425,4 @@
             await LoadData();
         }
     }
-
 }

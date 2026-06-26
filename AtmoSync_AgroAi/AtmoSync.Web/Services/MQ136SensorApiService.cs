@@ -19,7 +19,7 @@ namespace AtmoSync.Web.Services
             {
                 return await _httpClient.GetFromJsonAsync<ResponseModel<List<MQ136SensorDto>>>("MQ136Sensor");
             }
-            catch(Exception ex)
+            catch(Exception )
             {
                 return null;
             }
@@ -31,7 +31,7 @@ namespace AtmoSync.Web.Services
             {
                 return await _httpClient.GetFromJsonAsync<ResponseModel<MQ136SensorDto>>("MQ136Sensor/latest");
             }
-            catch (Exception ex)
+            catch (Exception )
             {
                 return null;
             }
@@ -43,7 +43,7 @@ namespace AtmoSync.Web.Services
             {
                 return await _httpClient.GetFromJsonAsync<ResponseModel<List<MQ136SensorDto>>>($"MQ136Sensor/latest/{count}");
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return null;
             }
@@ -72,7 +72,7 @@ namespace AtmoSync.Web.Services
 
                 return await _httpClient.GetFromJsonAsync<ResponseModel<List<MQ136SensorDto>>>(url);
             }
-            catch (Exception ex)
+            catch (Exception )
             {
                 return null;
             }

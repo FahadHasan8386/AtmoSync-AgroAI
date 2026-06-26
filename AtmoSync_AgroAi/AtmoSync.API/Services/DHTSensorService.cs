@@ -203,4 +203,29 @@ public class DHTSensorService : IDHTSensorService
             };
         }
     }
+
+    public async Task<ResponseModel<int>> UpdateStatusAsync(long id , bool inActive)
+    {
+        try
+        {
+            var result = await _repository.UpdateStatusAsync(id, inActive);
+
+            return new ResponseModel<int>
+            {
+                Code = StatusCodes.Status200OK,
+                Message = inActive
+                    ? "Sensor marked as inactive successfully."
+                    : "Sensor activated successfully.",
+                Data = result
+            };
+        }
+        catch (Exception ex)
+        {
+            return new ResponseModel<int>
+            {
+                Code = StatusCodes.Status500InternalServerError,
+                Message = ex.Message
+            };
+        }
+    }
 }

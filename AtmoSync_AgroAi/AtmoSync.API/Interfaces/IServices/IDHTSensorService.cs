@@ -17,5 +17,8 @@ namespace AtmoSync.API.Interfaces.IServices
         Task<ResponseModel<long>> CreateAsync(DHTSensorDto dto);
 
         Task<ResponseModel<int>> DeleteAsync(long id);
+
+        Task<ResponseModel<int>> UpdateStatusAsync(long id, bool inActive);
+
     }
 }

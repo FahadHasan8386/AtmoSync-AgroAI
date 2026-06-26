@@ -101,5 +101,19 @@ namespace AtmoSync.Web.Services
                 return null;
             }
         }
+
+        public async Task<ResponseModel<int>?> UpdateStatusAsync(long id , bool inActive)
+        {
+            try
+            {
+                var response = await _httpClient.PutAsync($"DHTSensor/{id}/status?inActive={inActive}",null);
+
+                return await response.Content.ReadFromJsonAsync<ResponseModel<int>>();
+            }
+            catch
+            {
+                return null;
+            }
+        }
     }
 }

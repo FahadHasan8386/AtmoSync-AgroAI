@@ -1,5 +1,414 @@
-﻿<h3>MQ136Sensor</h3>
+﻿@page "/mq136"
+
+@using AtmoSync.Shared.Models.DtoModels
+@using AtmoSync.Web.Services
+
+@inject MQ136SensorApiService SensorService
+
+<div class="container-fluid py-4">
+
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold text-primary mb-1">
+                🟢 MQ136 Gas Sensor Monitoring Dashboard
+            </h2>
+            <p class="text-muted mb-0">
+                Monitor H2S / sulfur gas sensor data
+            </p>
+        </div>
+
+        <button class="btn btn-primary"
+                @onclick="LoadData">
+            <i class="bi bi-arrow-clockwise"></i>
+            Refresh
+        </button>
+    </div>
+
+    <!-- Dashboard Cards -->
+    <div class="row g-4 mb-4">
+
+        <div class="col-lg-3 col-md-6">
+            <div class="card border-0 shadow-sm bg-danger text-white h-100">
+                <div class="card-body">
+                    <small class="text-white-50">Gas Level</small>
+                    <h2 class="fw-bold mt-2">
+                        🟢 @(LatestSensor?.H2SLevel ?? 0) ppm
+                    </h2>
+                    <small>Latest Reading</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6">
+            <div class="card border-0 shadow-sm bg-success text-white h-100">
+                <div class="card-body">
+                    <small class="text-white-50">Total Records</small>
+                    <h2 class="fw-bold mt-2">
+                        @Sensors.Count
+                    </h2>
+                    <small>Database Entries</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6">
+            <div class="card border-0 shadow-sm bg-warning h-100">
+                <div class="card-body">
+                    <small>Last Update</small>
+                    <h6 class="fw-bold mt-2">
+                        @(LatestSensor?.CreatedAt.ToString("dd MMM yyyy") ?? "-")
+                    </h6>
+                    <small>
+                        @(LatestSensor?.CreatedAt.ToString("hh:mm tt") ?? "-")
+                    </small>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6">
+            <div class="card border-0 shadow-sm bg-primary text-white h-100">
+                <div class="card-body">
+                    <small class="text-white-50">Active Sensors</small>
+                    <h2 class="fw-bold mt-2">
+                        @Sensors.Count(s => !s.InActive)
+                    </h2>
+                    <small>Currently Active</small>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Date Filter -->
+    <div class="card shadow-sm border-0 mb-4">
+
+        <div class="card-header bg-secondary text-white">
+            <i class="bi bi-calendar-range"></i>
+            Filter By Date Range
+        </div>
+
+        <div class="card-body">
+
+            <div class="row g-3">
+
+                <div class="col-md-4">
+                    <label class="form-label">From Date</label>
+                    <InputDate class="form-control"
+                               @bind-Value="FromDate" />
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label">To Date</label>
+                    <InputDate class="form-control"
+                               @bind-Value="ToDate" />
+                </div>
+
+                <div class="col-md-4 d-flex align-items-end">
+
+                    <button class="btn btn-primary me-2"
+                            @onclick="FilterByDate">
+                        <i class="bi bi-search"></i>
+                        Search
+                    </button>
+
+                    <button class="btn btn-outline-secondary"
+                            @onclick="LoadData">
+                        Reset
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Recent Readings -->
+    <div class="card shadow-sm border-0 mb-4">
+
+        <div class="card-header bg-info text-white d-flex justify-content-between">
+            <span>
+                <i class="bi bi-clock-history"></i>
+                Recent Readings
+            </span>
+
+            <span class="badge bg-light text-dark">
+                Last 5 Records
+            </span>
+        </div>
+
+        <div class="table-responsive">
+
+            <table class="table table-striped table-hover mb-0">
+
+                <thead class="table-dark">
+                    <tr>
+                        <th>#</th>
+                        <th>Gas Level</th>
+                        <th>Created By</th>
+                        <th>Date Time</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    @if (RecentReadings.Any())
+                    {
+                        int recentIndex = 1;
+
+                        @foreach (var item in RecentReadings)
+                        {
+                            <tr>
+                                <td>@recentIndex</td>
+
+                                <td>
+                                    <span class="badge bg-danger">
+                                        @item.H2SLevel ppm
+                                    </span>
+                                </td>
+
+                                <td>@item.CreatedBy</td>
+
+                                <td>
+                                    @item.CreatedAt.ToString("dd MMM yyyy hh:mm tt")
+                                </td>
+                            </tr>
+
+                            recentIndex++;
+                        }
+                    }
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+    <!-- Main Table -->
+    <div class="card shadow-sm border-0">
+
+        <div class="card-header bg-dark text-white d-flex justify-content-between">
+            <span>
+                <i class="bi bi-database"></i>
+                Sensor Records
+            </span>
+
+            <span class="badge bg-light text-dark">
+                @Sensors.Count Records
+            </span>
+        </div>
+
+        <div class="card-body">
+
+            @if (IsLoading)
+            {
+                <div class="text-center py-5">
+                    <div class="spinner-border text-primary"></div>
+                </div>
+            }
+            else
+            {
+                <div class="table-responsive">
+
+                    <table class="table table-hover align-middle">
+
+                        <thead class="table-light">
+                            <tr>
+                                <th>#</th>
+                                <th>ID</th>
+                                <th>Gas Level</th>
+                                <th>Created By</th>
+                                <th>Created At</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                            @if (Sensors.Any())
+                            {
+                                int index = 1;
+
+                                @foreach (var item in Sensors)
+                                {
+                                    <tr>
+
+                                        <td>@index</td>
+
+                                        <td>
+                                            <span class="badge bg-secondary">
+                                                #@item.Id
+                                            </span>
+                                        </td>
+
+                                        <td>
+                                            <span class="badge bg-danger">
+                                                @item.H2SLevel ppm
+                                            </span>
+                                        </td>
+
+                                        <td>@item.CreatedBy</td>
+
+                                        <td>
+                                            @item.CreatedAt.ToString("dd MMM yyyy hh:mm tt")
+                                        </td>
+
+                                        <td>
+                                            @if (item.InActive)
+                                            {
+                                                <span class="badge bg-danger">
+                                                    Inactive
+                                                </span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-success">
+                                                    Active
+                                                </span>
+                                            }
+                                        </td>
+
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-success me-1"
+                                                    disabled="@(!item.InActive)"
+                                                    @onclick="() => ChangeStatus(item.Id, false)">
+                                                Activate
+                                            </button>
+
+                                            <button class="btn btn-sm btn-outline-warning me-1"
+                                                    disabled="@(item.InActive)"
+                                                    @onclick="() => ChangeStatus(item.Id, true)">
+                                                Deactivate
+                                            </button>
+
+                                            <button class="btn btn-sm btn-outline-danger"
+                                                    @onclick="() => DeleteSensor(item.Id)">
+                                                Delete
+                                            </button>
+                                        </td>
+
+                                    </tr>
+
+                                    index++;
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="7"
+                                        class="text-center text-muted py-4">
+                                        No sensor data found.
+                                    </td>
+                                </tr>
+                            }
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+            }
+
+        </div>
+
+    </div>
+
+</div>
 
 @code {
 
+    private bool IsLoading = true;
+
+    private DateTime FromDate = DateTime.Today.AddDays(-7);
+    private DateTime ToDate = DateTime.Today;
+
+    private List<MQ136SensorDto> Sensors = new();
+    private List<MQ136SensorDto> RecentReadings = new();
+
+    private MQ136SensorDto? LatestSensor;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadData();
+    }
+
+    private async Task LoadData()
+    {
+        IsLoading = true;
+
+        var all = await SensorService.GetAllAsync();
+
+        if (all?.Code == 200 && all.Data != null)
+        {
+            Sensors = all.Data;
+        }
+
+        var latest = await SensorService.GetLatestAsync();
+
+        if (latest?.Code == 200)
+        {
+            LatestSensor = latest.Data;
+        }
+
+        var recent = await SensorService.GetLatestReadingsAsync(5);
+
+        if (recent?.Code == 200 && recent.Data != null)
+        {
+            RecentReadings = recent.Data;
+        }
+
+        IsLoading = false;
+    }
+
+    private async Task FilterByDate()
+    {
+        IsLoading = true;
+
+        var result = await SensorService.GetByDateRangeAsync(
+            FromDate,
+            ToDate);
+
+        if (result?.Code == 200 && result.Data != null)
+        {
+            Sensors = result.Data;
+        }
+
+        IsLoading = false;
+    }
+
+    private async Task ActivateSensor(long id)
+    {
+        await ChangeStatus(id, false);
+    }
+
+    private async Task DeactivateSensor(long id)
+    {
+        await ChangeStatus(id, true);
+    }
+
+    private async Task ChangeStatus(long id, bool inActive)
+    {
+        var result = await SensorService.UpdateStatusAsync(
+            id,
+            inActive);
+
+        if (result?.Code == 200)
+        {
+            await LoadData();
+        }
+    }
+
+    private async Task DeleteSensor(long id)
+    {
+        var result = await SensorService.DeleteAsync(id);
+
+        if (result?.Code == 200)
+        {
+            await LoadData();
+        }
+    }
 }

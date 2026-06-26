@@ -81,6 +81,23 @@ namespace AtmoSync.API.Repository
 
             return await _connection.ExecuteAsync(sql, new { Id = id });
         }
+        //Update InActive
+        public async Task<int> UpdateStatusAsync(long id, bool inActive)
+        {
+            const string sql = @"UPDATE MQ136Sensor SET
+                                 InActive = @InActive,
+                                    ModifiedAt = @ModifiedAt,
+                                    ModifiedBy = @ModifiedBy
+                                WHERE Id = @Id";
+            return await _connection.ExecuteAsync(sql, new
+            {
+                Id = id,
+                InActive = inActive,
+                ModifiedAt = DateTime.UtcNow,
+                ModifiedBy = "Admin"
+            });
+        }
+
 
         // GET BY DATE RANGE
         public async Task<List<MQ136Sensor>> GetByDateRangeAsync(DateTime fromDate, DateTime toDate)

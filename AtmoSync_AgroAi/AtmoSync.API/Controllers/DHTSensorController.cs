@@ -62,9 +62,7 @@ public class DHTSensorController : ControllerBase
     }
 
     [HttpPut("{id}/status")]
-    public async Task<IActionResult> UpdateStatus(
-    long id,
-    [FromQuery] bool inActive)
+    public async Task<IActionResult> UpdateStatus(long id,[FromQuery] bool inActive)
     {
         var result = await _service.UpdateStatusAsync(id, inActive);
 

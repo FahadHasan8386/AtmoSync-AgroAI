@@ -14,7 +14,6 @@ public class DHTSensorService : IDHTSensorService
     {
         _repository = repository;
     }
-
     // GET ALL
     public async Task<ResponseModel<List<DHTSensor>>> GetAllAsync()
     {
@@ -38,7 +37,6 @@ public class DHTSensorService : IDHTSensorService
             };
         }
     }
-
     // GET LATEST 
     public async Task<ResponseModel<DHTSensor>> GetLatestAsync()
     {
@@ -71,7 +69,6 @@ public class DHTSensorService : IDHTSensorService
             };
         }
     }
-
     // GET LAST N READINGS
     public async Task<ResponseModel<List<DHTSensor>>> GetLatestReadingsAsync(int count)
     {
@@ -104,7 +101,6 @@ public class DHTSensorService : IDHTSensorService
             };
         }
     }
-
     // CREATE 
     public async Task<ResponseModel<long>> CreateAsync(DHTSensorDto dto)
     {
@@ -137,7 +133,6 @@ public class DHTSensorService : IDHTSensorService
             };
         }
     }
-
     // DELETE 
     public async Task<ResponseModel<int>> DeleteAsync(long id)
     {
@@ -170,7 +165,6 @@ public class DHTSensorService : IDHTSensorService
             };
         }
     }
-
     // GET BY DATE RANGE 
     public async Task<ResponseModel<List<DHTSensor>>> GetByDateRangeAsync(DateTime fromDate,DateTime toDate)
     {
@@ -203,7 +197,7 @@ public class DHTSensorService : IDHTSensorService
             };
         }
     }
-
+    //Update Status
     public async Task<ResponseModel<int>> UpdateStatusAsync(long id , bool inActive)
     {
         try

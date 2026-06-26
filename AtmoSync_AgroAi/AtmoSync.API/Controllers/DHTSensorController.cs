@@ -60,4 +60,14 @@ public class DHTSensorController : ControllerBase
         var result = await _service.DeleteAsync(id);
         return StatusCode(result.Code, result);
     }
+
+    [HttpPut("{id}/status")]
+    public async Task<IActionResult> UpdateStatus(
+    long id,
+    [FromQuery] bool inActive)
+    {
+        var result = await _service.UpdateStatusAsync(id, inActive);
+
+        return StatusCode(result.Code, result);
+    }
 }

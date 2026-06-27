@@ -1,19 +1,70 @@
 ﻿@inherits LayoutComponentBase
-<div class="d-flex flex-column min-vh-100">
-    <nav class="navbar navbar-expand navbar-dark bg-dark px-3">
-        <span class="navbar-brand">🌐 SensorSphere Learning</span>
 
-        <div class="navbar-nav">
-            <NavLink class="nav-link text-white me-3" href="" Match="NavLinkMatch.All">Dashboard</NavLink>
-            <NavLink class="nav-link text-white me-3" href="sensors">Sensors</NavLink>
-            <NavLink class="nav-link text-white me-3" href="dht22">Dht Sensor</NavLink>
-            <NavLink class="nav-link text-white me-3" href="mq136">MQ136 Sensor</NavLink>
-            <NavLink class="nav-link text-white me-3" href="mq7">MQ7 Sensor</NavLink>
-            <NavLink class="nav-link text-white" href="about">About</NavLink>
+<div class="d-flex flex-column min-vh-100">
+
+    <nav class="navbar navbar-expand navbar-dark bg-dark px-3 shadow-sm">
+
+        <!-- Brand -->
+        <NavLink class="navbar-brand fw-bold me-4" href="/">
+            🌐 AtmoSync ArgoAi
+        </NavLink>
+
+        <!-- Left Menu -->
+        <div class="navbar-nav me-auto">
+
+            <NavLink class="nav-link text-white me-3"
+                     href=""
+                     Match="NavLinkMatch.All">
+                Dashboard
+            </NavLink>
+
+            <NavLink class="nav-link text-white me-3"
+                     href="dht22">
+                🌡️ DHT22
+            </NavLink>
+
+            <NavLink class="nav-link text-white me-3"
+                     href="mq136">
+                🟢 MQ136
+            </NavLink>
+
+            <NavLink class="nav-link text-white me-3"
+                     href="mq7">
+                🔥 MQ7
+            </NavLink>
+
+            <NavLink class="nav-link text-white"
+                     href="about">
+                About
+            </NavLink>
+
         </div>
+
+        <!-- Right Side -->
+        <div class="d-flex align-items-center">
+
+            <!-- Login -->
+            <NavLink class="btn btn-outline-light btn-sm me-2"
+                     href="login">
+                Login
+            </NavLink>
+
+            <!-- Register -->
+            <NavLink class="btn btn-primary btn-sm"
+                     href="register">
+                Register
+            </NavLink>
+
+        </div>
+
     </nav>
 
-    <main>
+    <main class="flex-grow-1">
         @Body
     </main>
+
+    <footer class="bg-dark text-white text-center py-2 small">
+        © 2026 AtmoSync ArgoAi • IoT Monitoring Platform • Fahad
+    </footer>
+
 </div>

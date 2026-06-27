@@ -1,6 +1,7 @@
 ﻿@page "/mq7"
 
 @using AtmoSync.Shared.Models.DtoModels
+@using AtmoSync.Web.Component
 @using AtmoSync.Web.Services
 
 @inject MQ7SensorApiService SensorService
@@ -81,48 +82,10 @@
     </div>
 
     <!-- Date Filter -->
-    <div class="card shadow-sm border-0 mb-4">
-
-        <div class="card-header bg-secondary text-white">
-            <i class="bi bi-calendar-range"></i>
-            Filter By Date Range
-        </div>
-
-        <div class="card-body">
-
-            <div class="row g-3">
-
-                <div class="col-md-4">
-                    <label class="form-label">From Date</label>
-                    <InputDate class="form-control"
-                               @bind-Value="FromDate" />
-                </div>
-
-                <div class="col-md-4">
-                    <label class="form-label">To Date</label>
-                    <InputDate class="form-control"
-                               @bind-Value="ToDate" />
-                </div>
-
-                <div class="col-md-4 d-flex align-items-end">
-
-                    <button class="btn btn-primary me-2"
-                            @onclick="FilterByDate">
-                        <i class="bi bi-search"></i>
-                        Search
-                    </button>
-
-                    <button class="btn btn-outline-secondary"
-                            @onclick="LoadData">
-                        Reset
-                    </button>
-
-                </div>
-
-            </div>
-
-        </div>
-    </div>
+    <DateFilter FromDate="FromDate"
+                ToDate="ToDate"
+                OnSearch="FilterByDate"
+                OnReset="LoadData" />
 
     <!-- Recent Readings -->
     <div class="card shadow-sm border-0 mb-4">

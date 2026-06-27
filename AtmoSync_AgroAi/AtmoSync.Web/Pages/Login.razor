@@ -1,0 +1,130 @@
+﻿@page "/login"
+
+@using AtmoSync.Shared.Models.DtoModels
+@using AtmoSync.Web.Services
+
+@inject AuthApiService AuthService
+@inject NavigationManager Navigation
+
+<div class="container py-5">
+
+    <div class="row justify-content-center">
+
+        <div class="col-lg-5 col-md-7">
+
+            <div class="card border-0 shadow-lg">
+
+                <div class="card-body p-5">
+
+                    <div class="text-center mb-4">
+                        <h2 class="fw-bold text-primary">
+                            Welcome Back 👋
+                        </h2>
+
+                        <p class="text-muted">
+                            Login to your AtmoSync account
+                        </p>
+                    </div>
+
+                    @if (!string.IsNullOrWhiteSpace(ErrorMessage))
+                    {
+                        <div class="alert alert-danger">
+                            @ErrorMessage
+                        </div>
+                    }
+
+                    <EditForm Model="LoginModel"
+                              OnValidSubmit="HandleLogin">
+
+                        <DataAnnotationsValidator />
+                        <ValidationSummary />
+
+                        <div class="mb-3">
+
+                            <label class="form-label">
+                                Email Address
+                            </label>
+
+                            <InputText class="form-control"
+                                       @bind-Value="LoginModel.Email"
+                                       placeholder="Enter your email" />
+
+                        </div>
+
+                        <div class="mb-4">
+
+                            <label class="form-label">
+                                Password
+                            </label>
+
+                            <InputText class="form-control"
+                                       type="password"
+                                       @bind-Value="LoginModel.Password"
+                                       placeholder="Enter your password" />
+
+                        </div>
+
+                        <button class="btn btn-primary w-100"
+                                disabled="@IsLoading">
+
+                            @if (IsLoading)
+                            {
+                                <span class="spinner-border spinner-border-sm me-2"></span>
+                            }
+
+                            Login
+
+                        </button>
+
+                    </EditForm>
+
+                    <div class="text-center mt-4">
+
+                        <span class="text-muted">
+                            Don't have an account?
+                        </span>
+
+                        <NavLink href="/register">
+                            Register Here
+                        </NavLink>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+@code {
+
+    private LoginDto LoginModel = new();
+
+    private bool IsLoading;
+
+    private string ErrorMessage = "";
+
+    private async Task HandleLogin()
+    {
+        IsLoading = true;
+        ErrorMessage = "";
+
+        var response = await AuthService.LoginAsync(LoginModel);
+
+        if (response?.Code == 200)
+        {
+
+            Navigation.NavigateTo("/");
+        }
+        else
+        {
+            ErrorMessage = response?.Message ?? "Login Failed";
+        }
+
+        IsLoading = false;
+    }
+}

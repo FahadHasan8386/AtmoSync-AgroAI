@@ -12,5 +12,6 @@ builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("https:/
 builder.Services.AddScoped<DhtSensorApiService>();
 builder.Services.AddScoped<MQ136SensorApiService>();
 builder.Services.AddScoped<MQ7SensorApiService>();
+builder.Services.AddScoped<AuthApiService>();
 
 await builder.Build().RunAsync();

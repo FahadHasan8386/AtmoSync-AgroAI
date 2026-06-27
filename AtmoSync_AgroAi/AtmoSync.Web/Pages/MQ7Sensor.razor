@@ -9,22 +9,9 @@
 <div class="container-fluid py-4">
 
     <!-- Header -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h2 class="fw-bold text-primary mb-1">
-                🟢 MQ7 Gas Sensor Monitoring Dashboard
-            </h2>
-            <p class="text-muted mb-0">
-                Monitor CO2  sensor data
-            </p>
-        </div>
-
-        <button class="btn btn-primary"
-                @onclick="LoadData">
-            <i class="bi bi-arrow-clockwise"></i>
-            Refresh
-        </button>
-    </div>
+    <DashboardHeader Title="🌡️ MQ7 IoT Monitoring Dashboard"
+                     Description="CO2 sensor data"
+                     RefreshClicked="LoadData" />
 
     <!-- Dashboard Cards -->
     <div class="row g-4 mb-4">
@@ -235,24 +222,9 @@
                                             }
                                         </td>
 
-                                        <td>
-                                            <button class="btn btn-sm btn-outline-success me-1"
-                                                    disabled="@(!item.InActive)"
-                                                    @onclick="() => ChangeStatus(item.Id, false)">
-                                                Activate
-                                            </button>
-
-                                            <button class="btn btn-sm btn-outline-warning me-1"
-                                                    disabled="@(item.InActive)"
-                                                    @onclick="() => ChangeStatus(item.Id, true)">
-                                                Deactivate
-                                            </button>
-
-                                            <button class="btn btn-sm btn-outline-danger"
-                                                    @onclick="() => DeleteSensor(item.Id)">
-                                                Delete
-                                            </button>
-                                        </td>
+                                        <SensorActions InActive="@item.InActive"
+                                                       ToggleStatus="@(x => ChangeStatus(item.Id,x))"
+                                                       Delete="@( () => DeleteSensor(item.Id))" />
 
                                     </tr>
 

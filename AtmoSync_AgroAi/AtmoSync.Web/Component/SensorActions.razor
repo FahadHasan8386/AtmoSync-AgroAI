@@ -1,0 +1,32 @@
+﻿<td>
+
+    <button class="btn btn-sm btn-outline-success me-1"
+            disabled="@(!InActive)"
+            @onclick="() => ToggleStatus.InvokeAsync(false)">
+        Activate
+    </button>
+
+    <button class="btn btn-sm btn-outline-warning me-1"
+            disabled="@(InActive)"
+            @onclick="() => ToggleStatus.InvokeAsync(true)">
+        Deactivate
+    </button>
+
+    <button class="btn btn-sm btn-outline-danger"
+            @onclick="Delete">
+        Delete
+    </button>
+
+</td>
+
+@code {
+
+    [Parameter] public bool InActive { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> ToggleStatus { get; set; }
+
+    [Parameter]
+    public EventCallback Delete { get; set; }
+
+}

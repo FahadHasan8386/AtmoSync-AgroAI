@@ -32,6 +32,8 @@ builder.Services.AddScoped<IDHTSensorRepository, DHTSensorRepository>();
 
 builder.Services.AddScoped<IMQ136SensorRepository, MQ136SensorRepository>();
 
+builder.Services.AddScoped<IMQ7SensorRepository, MQ7SensorRepository>();
+
 #endregion
 
 #region Services
@@ -41,6 +43,8 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IDHTSensorService, DHTSensorService>();
 
 builder.Services.AddScoped<IMQ136SensorService, MQ136SensorService>();
+
+builder.Services.AddScoped<IMQ7SensorService, MQ7SensorService>();
 
 builder.Services.AddScoped<JwtService>();
 

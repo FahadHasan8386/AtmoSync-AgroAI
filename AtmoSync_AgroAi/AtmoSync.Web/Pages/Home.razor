@@ -1,5 +1,123 @@
 ﻿@page "/"
 
-<PageTitle>Atmosync ArgoAi</PageTitle>
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Authorization
+@using AtmoSync.Web.Services
 
-<h1>Hello, world!</h1>
+@inject DhtSensorApiService DhtService
+@inject MQ136SensorApiService MQ136Service
+@inject MQ7SensorApiService MQ7Service
+
+
+
+<PageTitle>Dashboard</PageTitle>
+
+<div class="container py-4">
+	<div class="d-flex justify-content-between align-items-center mb-4">
+		<h2>Dashboard</h2>
+		
+	</div>
+
+	<div class="row">
+		<div class="col-md-4">
+			<div class="card mb-3">
+				<div class="card-body">
+					<h5 class="card-title">DHT Sensor</h5>
+					@if (Dht == null)
+					{
+						<p>Loading...</p>
+					}
+					else
+					{
+						<p class="mb-1"><strong>Temperature:</strong> @Dht.Temperature °C</p>
+						<p class="mb-1"><strong>Humidity:</strong> @Dht.Humidity %</p>
+
+						<AuthorizeView Roles="Admin">
+							<Authorized>
+								<p class="mb-1"><strong>Created By:</strong> @Dht.CreatedBy</p>
+								<p class="mb-1"><strong>Created At:</strong> @Dht.CreatedAt</p>
+								<p class="mb-1"><strong>Modified By:</strong> @Dht.ModifiedBy</p>
+								<p class="mb-1"><strong>InActive:</strong> @Dht.InActive</p>
+							</Authorized>
+							<NotAuthorized>
+								<p class="text-muted small mb-0">Full metadata visible to Admin only.</p>
+							</NotAuthorized>
+						</AuthorizeView>
+					}
+				</div>
+			</div>
+		</div>
+
+		<div class="col-md-4">
+			<div class="card mb-3">
+				<div class="card-body">
+					<h5 class="card-title">MQ-136 Sensor</h5>
+					@if (MQ136 == null)
+					{
+						<p>Loading...</p>
+					}
+					else
+					{
+						<p class="mb-1"><strong>H2S Level:</strong> @MQ136.H2SLevel</p>
+
+						<AuthorizeView Roles="Admin">
+							<Authorized>
+								<p class="mb-1"><strong>Created By:</strong> @MQ136.CreatedBy</p>
+								<p class="mb-1"><strong>Created At:</strong> @MQ136.CreatedAt</p>
+								<p class="mb-1"><strong>InActive:</strong> @MQ136.InActive</p>
+							</Authorized>
+							<NotAuthorized>
+								<p class="text-muted small mb-0">Full metadata visible to Admin only.</p>
+							</NotAuthorized>
+						</AuthorizeView>
+					}
+				</div>
+			</div>
+		</div>
+
+		<div class="col-md-4">
+			<div class="card mb-3">
+				<div class="card-body">
+					<h5 class="card-title">MQ-7 Sensor</h5>
+					@if (MQ7 == null)
+					{
+						<p>Loading...</p>
+					}
+					else
+					{
+						<p class="mb-1"><strong>CO Level:</strong> @MQ7.COLevel</p>
+
+						<AuthorizeView Roles="Admin">
+							<Authorized>
+								<p class="mb-1"><strong>Created By:</strong> @MQ7.CreatedBy</p>
+								<p class="mb-1"><strong>Created At:</strong> @MQ7.CreatedAt</p>
+								<p class="mb-1"><strong>InActive:</strong> @MQ7.InActive</p>
+							</Authorized>
+							<NotAuthorized>
+								<p class="text-muted small mb-0">Full metadata visible to Admin only.</p>
+							</NotAuthorized>
+						</AuthorizeView>
+					}
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+@code {
+	private AtmoSync.Shared.Models.DtoModels.DHTSensorDto? Dht;
+	private AtmoSync.Shared.Models.DtoModels.MQ136SensorDto? MQ136;
+	private AtmoSync.Shared.Models.DtoModels.MQ7SensorDto? MQ7;
+
+	protected override async Task OnInitializedAsync()
+	{
+		var d = await DhtService.GetLatestAsync();
+		if (d?.Data != null) Dht = d.Data;
+
+		var m1 = await MQ136Service.GetLatestAsync();
+		if (m1?.Data != null) MQ136 = m1.Data;
+
+		var m2 = await MQ7Service.GetLatestAsync();
+		if (m2?.Data != null) MQ7 = m2.Data;
+	}
+}

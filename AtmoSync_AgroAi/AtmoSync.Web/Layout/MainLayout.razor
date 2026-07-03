@@ -1,4 +1,5 @@
-﻿@inherits LayoutComponentBase
+﻿@using Microsoft.AspNetCore.Components.Authorization
+@inherits LayoutComponentBase
 
 <div class="d-flex flex-column min-vh-100">
 
@@ -18,20 +19,14 @@
                 Dashboard
             </NavLink>
 
-            <NavLink class="nav-link text-white me-3"
-                     href="dht22">
-                🌡️ DHT22
-            </NavLink>
-
-            <NavLink class="nav-link text-white me-3"
-                     href="mq136">
-                🟢 MQ136
-            </NavLink>
-
-            <NavLink class="nav-link text-white me-3"
-                     href="mq7">
-                🔥 MQ7
-            </NavLink>
+            <AuthorizeView Roles="Admin">
+                <Authorized>
+                    <NavLink class="nav-link text-white me-3" href="dht22">🌡️ DHT22</NavLink>
+                    <NavLink class="nav-link text-white me-3" href="mq136">🟢 MQ136</NavLink>
+                    <NavLink class="nav-link text-white me-3" href="mq7">🔥 MQ7</NavLink>
+                </Authorized>
+                
+            </AuthorizeView>
 
             <NavLink class="nav-link text-white"
                      href="about">

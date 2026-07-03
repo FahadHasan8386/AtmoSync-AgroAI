@@ -1,12 +1,13 @@
 
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using AtmoSync.API.Interfaces.IRepositories;
 using AtmoSync.API.Interfaces.IServices;
+using AtmoSync.API.Model;
 using AtmoSync.API.Repository;
 using AtmoSync.API.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Data.SqlClient;
-using System.Data;
 using Microsoft.IdentityModel.Tokens;
+using System.Data;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -84,6 +85,8 @@ builder.Services.AddAuthorization();
 
 #endregion
 
+
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowBlazor",
@@ -114,5 +117,28 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+using (var scope = app.Services.CreateScope())
+{
+    var userRepository = scope.ServiceProvider.GetRequiredService<IUserRepository>();
+
+    var adminEmail = "admin@atmosync.com";
+    var existingAdmin = await userRepository.GetByEmailAsync(adminEmail);
+
+    if (existingAdmin == null)
+    {
+        var admin = new User
+        {
+            FullName = "System Admin",
+            Email = adminEmail,
+            PasswordHash = BCrypt.Net.BCrypt.HashPassword("Admin@123"),
+            Role = "Admin",
+            CreatedAt = DateTime.Now,
+            InActive = false
+        };
+
+        await userRepository.CreateAsync(admin);
+    }
+}
 
 app.Run();

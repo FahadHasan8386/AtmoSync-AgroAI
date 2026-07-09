@@ -16,13 +16,21 @@ CREATE TABLE Users
 
     Role NVARCHAR(50) NOT NULL DEFAULT 'User',
 
-    CreatedBy NVARCHAR(100) NULL,
-    CreatedAt DATETIME NOT NULL DEFAULT GETDATE(),
+    RefreshToken NVARCHAR(MAX) NULL,
+
+    RefreshTokenExpiryTime DATETIME2 NULL,
+
+
+    CreatedBy NVARCHAR(100) DEFAULT 'AtmoSync Agro Ai',
+
+    CreatedAt DATETIME2 NOT NULL DEFAULT GETDATE(),
 
     InActive BIT NOT NULL DEFAULT 0,
 
+
     ModifiedBy NVARCHAR(100) NULL,
-    ModifiedAt DATETIME NULL
+
+    ModifiedAt DATETIME2 NULL
 );
 GO
 

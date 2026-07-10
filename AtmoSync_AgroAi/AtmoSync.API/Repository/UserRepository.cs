@@ -16,7 +16,7 @@ namespace AtmoSync.API.Repository
 
         public async Task<User?> GetByEmailAsync(string email)
         {
-            const string sql = @"SELECT TOP 1 Id,FullName,Email,PasswordHash,Role,CreatedAt, InActive
+            const string sql = @"SELECT TOP 1 Id,FullName,Email,PasswordHash,Role,RefreshToken,RefreshTokenExpiryTime,CreatedBy,CreatedAt, InActive, ModifiedBy,ModifiedAt
                 FROM Users
                 WHERE Email = @Email";
 
@@ -25,7 +25,7 @@ namespace AtmoSync.API.Repository
 
         public async Task<User?> GetByIdAsync(long id)
         {
-            const string sql = @"SELECT TOP 1 Id, FullName, Email, PasswordHash, Role, CreatedAt,InActive
+            const string sql = @"SELECT TOP 1 Id, FullName, Email, PasswordHash, Role,RefreshToken,RefreshTokenExpiryTime,CreatedBy, CreatedAt,InActive,ModifiedBy, ModifiedAt
                 FROM Users
                 WHERE Id = @Id";
 
@@ -34,11 +34,23 @@ namespace AtmoSync.API.Repository
 
         public async Task<long> CreateAsync(User user)
         {
-            const string sql = @"INSERT INTO Users(FullName, Email, PasswordHash, Role, CreatedAt,InActive)
+            const string sql = @"INSERT INTO Users(FullName, Email, PasswordHash, Role,CreatedBy, CreatedAt,InActive)
                 OUTPUT INSERTED.Id
-                VALUES(@FullName,@Email,@PasswordHash,@Role,@CreatedAt,@InActive);";
+                VALUES(@FullName,@Email,@PasswordHash,@Role,@CreatedBy,@CreatedAt,@InActive);";
 
             return await _connection.ExecuteScalarAsync<long>(sql,user);
+        }
+
+        public async Task UpdateAsync(User user)
+        {
+            const string sql = @"UPDATE Users SET 
+                                RefreshToken = @RefreshToken,
+                                RefreshTokenExpiryTime = @RefreshTokenExpiryTime,
+                                ModifiedBy = @ModifiedBy,
+                                ModifiedAt = GETDATE()
+                                WHERE Id = @Id";
+
+            await _connection.ExecuteAsync(sql, user);
         }
     }
 }

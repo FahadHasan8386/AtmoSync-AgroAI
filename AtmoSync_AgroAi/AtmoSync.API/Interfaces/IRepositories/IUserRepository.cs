@@ -9,5 +9,7 @@ namespace AtmoSync.API.Interfaces.IRepositories
         Task<User?> GetByIdAsync(long id);
 
         Task<long> CreateAsync(User user);
+
+        Task UpdateAsync(User user);
     }
 }

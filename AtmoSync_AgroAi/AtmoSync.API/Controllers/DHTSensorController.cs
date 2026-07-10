@@ -1,9 +1,11 @@
 ﻿using AtmoSync.API.Interfaces.IServices;
 using AtmoSync.Shared.Models.DtoModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize(Roles = "Admin")]
 public class DHTSensorController : ControllerBase
 {
     private readonly IDHTSensorService _service;

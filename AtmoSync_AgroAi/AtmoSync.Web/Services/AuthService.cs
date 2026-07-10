@@ -20,22 +20,23 @@ namespace AtmoSync.Web.Services
 
         public async Task<bool> LoginAsync(LoginDto user)
         {
-            var response = await _http.PostAsJsonAsync("api/Auth/login", user);
+            var response = await _http.PostAsJsonAsync("api/Auth/login",user);
 
-            if(!response.IsSuccessStatusCode)
-            {
-                return false;
-            }
-            var result = await response.Content.ReadFromJsonAsync<TokenResponseDto>();
-
-            if(result == null)
+            if (!response.IsSuccessStatusCode)
             {
                 return false;
             }
 
-            await _tokenService.SaveTokensAsync(result.AccessToken, result.RefreshToken);
+            var result =  await response.Content.ReadFromJsonAsync<ResponseModel<LoginResponseDto>>();
 
-            _authProvider.NotifyUserAuthentication(result.AccessToken);
+            if (result?.Data == null)
+            {
+                return false;
+            }
+
+            await _tokenService.SaveTokensAsync( result.Data.Token, result.Data.RefreshToken);
+
+            _authProvider.NotifyUserAuthentication( result.Data.Token);
 
             return true;
         }

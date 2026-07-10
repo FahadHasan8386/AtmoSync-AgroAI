@@ -1,11 +1,13 @@
 ﻿using AtmoSync.API.Interfaces.IServices;
 using AtmoSync.Shared.Models.DtoModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AtmoSync.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize(Roles = "Admin")]
     public class MQ136SensorController : ControllerBase
     {
         private readonly IMQ136SensorService _service;

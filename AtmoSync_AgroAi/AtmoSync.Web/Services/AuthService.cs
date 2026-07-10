@@ -18,7 +18,7 @@ namespace AtmoSync.Web.Services
             _authProvider = authProvider;
         }
 
-        public async Task<bool> Login(LoginDto user)
+        public async Task<bool> LoginAsync(LoginDto user)
         {
             var response = await _http.PostAsJsonAsync("api/Auth/login", user);
 

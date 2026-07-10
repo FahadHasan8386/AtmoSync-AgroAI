@@ -3,8 +3,9 @@
 @using AtmoSync.Shared.Models.DtoModels
 @using AtmoSync.Web.Services
 
-@inject AuthApiService AuthService
+@inject AuthService AuthService
 @inject NavigationManager Navigation
+
 
 <div class="container py-5">
 
@@ -16,14 +17,17 @@
 
                 <div class="card-body p-5">
 
+
                     <div class="text-center mb-4">
+
                         <h2 class="fw-bold text-primary">
-                            Welcome Back 👋
+                            Welcome Back 
                         </h2>
 
                         <p class="text-muted">
                             Login to your AtmoSync account
                         </p>
+
                     </div>
 
                     @if (!string.IsNullOrWhiteSpace(ErrorMessage))
@@ -33,8 +37,7 @@
                         </div>
                     }
 
-                    <EditForm Model="LoginModel"
-                              OnValidSubmit="HandleLogin">
+                    <EditForm Model="@LoginModel"OnValidSubmit="HandleLogin">
 
                         <DataAnnotationsValidator />
                         <ValidationSummary />
@@ -57,26 +60,22 @@
                                 Password
                             </label>
 
-                            <InputText class="form-control"
-                                       type="password"
-                                       @bind-Value="LoginModel.Password"
+                            <InputText class="form-control"type="password"@bind-Value="LoginModel.Password"
                                        placeholder="Enter your password" />
 
                         </div>
 
-                        <button class="btn btn-primary w-100"
-                                disabled="@IsLoading">
+                        <button class="btn btn-primary w-100" disabled="@IsLoading">
 
                             @if (IsLoading)
                             {
                                 <span class="spinner-border spinner-border-sm me-2"></span>
                             }
-
                             Login
-
                         </button>
 
                     </EditForm>
+
 
                     <div class="text-center mt-4">
 
@@ -89,7 +88,6 @@
                         </NavLink>
 
                     </div>
-
                 </div>
 
             </div>
@@ -104,27 +102,26 @@
 
     private LoginDto LoginModel = new();
 
-    private bool IsLoading;
-
+    private bool IsLoading = false;
     private string ErrorMessage = "";
 
     private async Task HandleLogin()
     {
+
         IsLoading = true;
+
         ErrorMessage = "";
 
-        var response = await AuthService.LoginAsync(LoginModel);
+        bool result = await AuthService.LoginAsync(LoginModel);
 
-        if (response?.Code == 200)
+        if (result)
         {
-
             Navigation.NavigateTo("/");
         }
         else
         {
-            ErrorMessage = response?.Message ?? "Login Failed";
+            ErrorMessage ="Invalid email or password.";
         }
-
         IsLoading = false;
     }
 }

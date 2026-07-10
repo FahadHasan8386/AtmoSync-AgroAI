@@ -146,6 +146,9 @@ namespace AtmoSync.API.Services
 
                 user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
 
+
+                await _userRepository.UpdateAsync(user);
+
                 return new ResponseModel<LoginResponseDto>
                 {
 

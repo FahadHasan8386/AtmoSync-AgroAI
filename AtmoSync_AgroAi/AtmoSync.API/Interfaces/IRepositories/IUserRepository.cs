@@ -11,5 +11,6 @@ namespace AtmoSync.API.Interfaces.IRepositories
         Task<long> CreateAsync(User user);
 
         Task UpdateAsync(User user);
+        Task<bool> UpdateRefreshTokenAsync(User user);
     }
 }

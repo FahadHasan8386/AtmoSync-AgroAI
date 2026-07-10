@@ -43,14 +43,29 @@ namespace AtmoSync.API.Repository
 
         public async Task UpdateAsync(User user)
         {
-            const string sql = @"UPDATE Users SET 
-                                RefreshToken = @RefreshToken,
-                                RefreshTokenExpiryTime = @RefreshTokenExpiryTime,
-                                ModifiedBy = @ModifiedBy,
-                                ModifiedAt = GETDATE()
+            const string sql = @"UPDATE Users 
+                                SET 
+                                    RefreshToken = @RefreshToken,
+                                    RefreshTokenExpiryTime = @RefreshTokenExpiryTime,
+                                    ModifiedBy = 'AtmoSync Agro Ai',
+                                    ModifiedAt = GETDATE()
                                 WHERE Id = @Id";
 
             await _connection.ExecuteAsync(sql, user);
+        }
+
+        public async Task<bool> UpdateRefreshTokenAsync(User user)
+        {
+            const string sql = @"
+                            UPDATE Users
+                            SET 
+                                RefreshToken = @RefreshToken,
+                                RefreshTokenExpiryTime = @RefreshTokenExpiryTime
+                            WHERE Id = @Id";
+
+            var result = await _connection.ExecuteAsync(sql, user);
+
+            return result > 0;
         }
     }
 }

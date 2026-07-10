@@ -1,8 +1,11 @@
 ﻿@page "/register"
 
 @using AtmoSync.Shared.Models.DtoModels
-@inject AtmoSync.Web.Services.AuthApiService AuthService
+@using AtmoSync.Shared
+
+@inject AtmoSync.Web.Services.AuthService AuthService
 @inject NavigationManager Navigation
+
 
 <div class="container py-5">
 
@@ -14,7 +17,9 @@
 
                 <div class="card-body p-4">
 
+
                     <div class="text-center mb-4">
+
                         <h2 class="fw-bold text-primary">
                             Create Account
                         </h2>
@@ -22,7 +27,10 @@
                         <p class="text-muted">
                             Register for AtmoSync ArgoAi
                         </p>
+
                     </div>
+
+
 
                     @if (!string.IsNullOrEmpty(Message))
                     {
@@ -30,38 +38,50 @@
                             @Message
                         </div>
                     }
-                    <EditForm Model="@registerDto"
-                              OnValidSubmit="HandleRegister">
+
+
+                    <EditForm Model="@registerDto"OnValidSubmit="HandleRegister">
 
                         <DataAnnotationsValidator />
                         <ValidationSummary />
 
+
                         <div class="mb-3">
+
                             <label class="form-label">
                                 Full Name
                             </label>
 
+
                             <InputText class="form-control"
-                                       @bind-Value="registerDto.FullName" />
+                                       @bind-Value="registerDto.FullName"
+                                       placeholder="Enter full name" />
+
                         </div>
 
                         <div class="mb-3">
+
                             <label class="form-label">
                                 Email
                             </label>
 
                             <InputText class="form-control"
-                                       @bind-Value="registerDto.Email" />
+                                       @bind-Value="registerDto.Email"
+                                       placeholder="Enter email" />
+
                         </div>
 
                         <div class="mb-3">
+
                             <label class="form-label">
                                 Password
                             </label>
 
                             <InputText type="password"
                                        class="form-control"
-                                       @bind-Value="registerDto.Password" />
+                                       @bind-Value="registerDto.Password"
+                                       placeholder="Enter password" />
+
                         </div>
 
                         <button type="submit"
@@ -82,13 +102,9 @@
                     </div>
 
                 </div>
-
             </div>
-
         </div>
-
     </div>
-
 </div>
 
 @code {
@@ -101,15 +117,25 @@
     {
         var response = await AuthService.RegisterAsync(registerDto);
 
-        if (response?.Code == 200 || response?.Code == 201)
+        if (response == null)
         {
-            Message = "Registration successful.";
+            Message = "Server error.";
+            return;
+        }
 
+        if (response.Code == 201)
+        {
+
+            Message ="Registration successful. Redirecting...";
+
+            await Task.Delay(1000);
             Navigation.NavigateTo("/login");
         }
         else
         {
-            Message = response?.Message ?? "Registration failed.";
+            Message =
+            response.Message;
         }
     }
+
 }

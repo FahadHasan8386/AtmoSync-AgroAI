@@ -1,4 +1,5 @@
-﻿using AtmoSync.Shared.Models.DtoModels;
+﻿using AtmoSync.Shared;
+using AtmoSync.Shared.Models.DtoModels;
 using AtmoSync.Web.Authentication;
 using System.Net.Http.Json;
 
@@ -37,6 +38,13 @@ namespace AtmoSync.Web.Services
             _authProvider.NotifyUserAuthentication(result.AccessToken);
 
             return true;
+        }
+
+        public async Task<ResponseModel<string>?> RegisterAsync(RegisterDto dto)
+        {
+            var response =await _http.PostAsJsonAsync("api/Auth/register",dto);
+
+            return await response.Content.ReadFromJsonAsync<ResponseModel<string>>();
         }
 
         public async Task<bool> Logout()

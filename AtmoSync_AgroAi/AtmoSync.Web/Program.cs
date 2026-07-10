@@ -12,29 +12,32 @@ var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
+
 // Local Storage
 builder.Services.AddBlazoredLocalStorage();
 
-// Authorization
+
+// Authentication
 builder.Services.AddAuthorizationCore();
 
-
-// Authentication State Provider
-builder.Services.AddScoped<CustomAuthStateProvider>();
+builder.Services.AddScoped<CustomAuthenticationStateProvider>();
 
 builder.Services.AddScoped<AuthenticationStateProvider>(
-    sp => sp.GetRequiredService<CustomAuthStateProvider>());
+    provider =>
+    provider.GetRequiredService<CustomAuthenticationStateProvider>());
 
-// Token Service
+
+// Token
 builder.Services.AddScoped<TokenService>();
+
 
 // JWT Handler
 builder.Services.AddScoped<ApiAuthenticationHeaderHandler>();
 
-// HttpClient with JWT token attach
+
+// HttpClient
 builder.Services.AddScoped(sp =>
 {
-
     var handler = sp.GetRequiredService<ApiAuthenticationHeaderHandler>();
 
     handler.InnerHandler = new HttpClientHandler();
@@ -43,18 +46,15 @@ builder.Services.AddScoped(sp =>
     {
         BaseAddress = new Uri("https://localhost:7276/")
     };
-
 });
 
+
 // API Services
+builder.Services.AddScoped<AuthService>();
 
 builder.Services.AddScoped<DhtSensorApiService>();
-
 builder.Services.AddScoped<MQ136SensorApiService>();
-
 builder.Services.AddScoped<MQ7SensorApiService>();
 
-// Authentication Service
-builder.Services.AddScoped<AuthService>();
 
 await builder.Build().RunAsync();

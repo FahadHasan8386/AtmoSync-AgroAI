@@ -3,6 +3,7 @@ using AtmoSync.API.Interfaces.IServices;
 using AtmoSync.API.Model;
 using AtmoSync.Shared;
 using AtmoSync.Shared.Models.DtoModels;
+using System.Globalization;
 using System.Transactions;
 
 namespace AtmoSync.API.Services
@@ -71,6 +72,7 @@ namespace AtmoSync.API.Services
                         PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password),
                         Role = "User",
                         CreatedAt = DateTime.Now,
+                        CreatedBy = "AtmoSync Agro Ai",
                         InActive = false
                     };
 
@@ -108,68 +110,59 @@ namespace AtmoSync.API.Services
         {
             try
             {
-                if (string.IsNullOrWhiteSpace(dto.Email))
-                {
-                    return new ResponseModel<LoginResponseDto>
-                    {
-                        Code = StatusCodes.Status400BadRequest,
-                        Message = "Email is required."
-                    };
-                }
-
-                if (string.IsNullOrWhiteSpace(dto.Password))
-                {
-                    return new ResponseModel<LoginResponseDto>
-                    {
-                        Code = StatusCodes.Status400BadRequest,
-                        Message = "Password is required."
-                    };
-                }
-
                 var user = await _userRepository.GetByEmailAsync(dto.Email);
 
-                if (user == null)
+                if(user == null)
                 {
                     return new ResponseModel<LoginResponseDto>
                     {
-                        Code = StatusCodes.Status401Unauthorized,
-                        Message = "Invalid email or password."
+                        Code = 401,
+                        Message = "Invalid Email or Password"
                     };
                 }
 
-                bool isValidPassword = BCrypt.Net.BCrypt.Verify(dto.Password,user.PasswordHash);
+                bool passwordValid = BCrypt.Net.BCrypt.Verify(dto.Password, user.PasswordHash);
 
-                if (!isValidPassword)
+                if(!passwordValid)
                 {
                     return new ResponseModel<LoginResponseDto>
                     {
-                        Code = StatusCodes.Status401Unauthorized,
-                        Message = "Invalid email or password."
+                        Code = 401,
+                        Message = "Invalid Password"
                     };
                 }
 
-                if (user.InActive)
+                if(user.InActive)
                 {
                     return new ResponseModel<LoginResponseDto>
                     {
-                        Code = StatusCodes.Status403Forbidden,
-                        Message = "User account is inactive."
+                        Code = 403,
+                        Message = "Account InActive"
                     };
                 }
+                string accessToken = _jwtService.GenerateToken(user);
 
-                string token =_jwtService.GenerateToken(user);
+                user.RefreshToken = GenerateRefreshToken();
+
+                user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
 
                 return new ResponseModel<LoginResponseDto>
                 {
-                    Code = StatusCodes.Status200OK,
+
+                    Code = 200,
+
                     Message = "Login successful.",
-                    Data  = new LoginResponseDto
+
+
+                    Data = new LoginResponseDto
                     {
+
                         UserId = user.Id,
                         FullName = user.FullName,
                         Email = user.Email,
                         Role = user.Role,
-                        Token = token
+                        Token = accessToken,
+                        RefreshToken = user.RefreshToken
                     }
                 };
             }
@@ -177,10 +170,115 @@ namespace AtmoSync.API.Services
             {
                 return new ResponseModel<LoginResponseDto>
                 {
+                    Code = 500,
+                    Message = ex.Message
+                };
+            }
+        }
+
+        public async Task<ResponseModel<LoginResponseDto>> RefreshTokenAsync(RefreshTokenRequestDto dto)
+        {
+            var user = await _userRepository.GetByIdAsync(dto.UserId);
+
+            if (user == null)
+            {
+
+                return new ResponseModel<LoginResponseDto>
+                {
+                    Code = 404,
+                    Message = "User not found."
+                };
+
+            }
+
+            if (user.RefreshToken != dto.RefreshToken)
+            {
+
+                return new ResponseModel<LoginResponseDto>
+                {
+                    Code = 401,
+                    Message = "Invalid refresh token."
+                };
+
+            }
+
+            if (user.RefreshTokenExpiryTime < DateTime.UtcNow)
+            {
+
+                return new ResponseModel<LoginResponseDto>
+                {
+                    Code = 401,
+                    Message = "Refresh token expired."
+                };
+
+            }
+
+            string newToken =_jwtService.GenerateToken(user);
+
+            user.RefreshToken =GenerateRefreshToken();
+
+            user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7); 
+
+            await _userRepository.UpdateAsync(user);
+
+            return new ResponseModel<LoginResponseDto>
+            {
+
+                Code = 200,
+                Message = "Token refreshed.",
+                Data = new LoginResponseDto
+                {
+                    UserId = user.Id,
+                    FullName = user.FullName,
+                    Email = user.Email,
+                    Role = user.Role,
+                    Token = newToken,
+                    RefreshToken = user.RefreshToken
+                }
+            };
+        }
+
+        public async Task<ResponseModel<string>> LogoutAsync(long userId)
+        {
+            try
+            {
+                var user = await _userRepository.GetByIdAsync(userId);
+
+                if (user == null)
+                {
+                    return new ResponseModel<string>
+                    {
+                        Code = StatusCodes.Status404NotFound,
+                        Message = "User not found."
+                    };
+                }
+                user.RefreshToken = null;
+
+                user.RefreshTokenExpiryTime = null;
+
+
+                await _userRepository.UpdateAsync(user);
+
+                return new ResponseModel<string>
+                {
+                    Code = StatusCodes.Status200OK,
+                    Message = "Logout successful."
+                };
+            }
+            catch (Exception ex)
+            {
+                return new ResponseModel<string>
+                {
                     Code = StatusCodes.Status500InternalServerError,
                     Message = ex.Message
                 };
             }
         }
+
+        private string GenerateRefreshToken()
+        {
+            return Guid.NewGuid().ToString();
+        }
+
     }
 }

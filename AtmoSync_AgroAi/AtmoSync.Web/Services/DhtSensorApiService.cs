@@ -19,7 +19,7 @@ namespace AtmoSync.Web.Services
         {
             try
             {
-                return await _httpClient.GetFromJsonAsync<ResponseModel<List<DHTSensorDto>>>("DHTSensor");
+                return await _httpClient.GetFromJsonAsync<ResponseModel<List<DHTSensorDto>>>("api/DHTSensor");
             }
             catch (Exception ex)
             {
@@ -33,7 +33,7 @@ namespace AtmoSync.Web.Services
         {
             try
             {
-                return await _httpClient.GetFromJsonAsync<ResponseModel<DHTSensorDto>>("DHTSensor/latest");
+                return await _httpClient.GetFromJsonAsync<ResponseModel<DHTSensorDto>>("api/DHTSensor/latest");
             }
             catch (Exception ex)
             {
@@ -47,7 +47,7 @@ namespace AtmoSync.Web.Services
         {
             try
             {
-                return await _httpClient.GetFromJsonAsync<ResponseModel<List<DHTSensorDto>>>($"DHTSensor/latest/{count}");
+                return await _httpClient.GetFromJsonAsync<ResponseModel<List<DHTSensorDto>>>($"api/DHTSensor/latest/{count}");
             }
             catch (Exception ex)
             {
@@ -61,7 +61,7 @@ namespace AtmoSync.Web.Services
         {
             try
             {
-                var response = await _httpClient.PostAsJsonAsync("DHTSensor", dto);
+                var response = await _httpClient.PostAsJsonAsync("api/DHTSensor", dto);
 
                 return await response.Content.ReadFromJsonAsync<ResponseModel<long>>();
             }
@@ -76,7 +76,7 @@ namespace AtmoSync.Web.Services
         {
             try
             {
-                var url = $"DHTSensor/range?fromDate={fromDate:yyyy-MM-dd}&toDate={toDate:yyyy-MM-dd}";
+                var url = $"api/DHTSensor/range?fromDate={fromDate:yyyy-MM-dd}&toDate={toDate:yyyy-MM-dd}";
 
                 return await _httpClient.GetFromJsonAsync<ResponseModel<List<DHTSensorDto>>>(url);
             }
@@ -92,7 +92,7 @@ namespace AtmoSync.Web.Services
         {
             try
             {
-                var response = await _httpClient.DeleteAsync($"DHTSensor/{id}");
+                var response = await _httpClient.DeleteAsync($"api/DHTSensor/{id}");
 
                 return await response.Content.ReadFromJsonAsync<ResponseModel<int>>();
             }
@@ -106,7 +106,7 @@ namespace AtmoSync.Web.Services
         {
             try
             {
-                var response = await _httpClient.PutAsync($"DHTSensor/{id}/status?inActive={inActive}",null);
+                var response = await _httpClient.PutAsync($"api/DHTSensor/{id}/status?inActive={inActive}",null);
 
                 return await response.Content.ReadFromJsonAsync<ResponseModel<int>>();
             }

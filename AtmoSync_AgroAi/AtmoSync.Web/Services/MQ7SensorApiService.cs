@@ -18,7 +18,7 @@ namespace AtmoSync.Web.Services
         {
             try
             {
-                return await _httpClient.GetFromJsonAsync<ResponseModel<List<MQ7SensorDto>>>("MQ7Sensor");
+                return await _httpClient.GetFromJsonAsync<ResponseModel<List<MQ7SensorDto>>>("api/MQ7Sensor");
             }
             catch (Exception)
             {
@@ -30,7 +30,7 @@ namespace AtmoSync.Web.Services
         {
             try
             {
-                return await _httpClient.GetFromJsonAsync<ResponseModel<MQ7SensorDto>>("MQ7Sensor/latest");
+                return await _httpClient.GetFromJsonAsync<ResponseModel<MQ7SensorDto>>("api/MQ7Sensor/latest");
             }
             catch (Exception )
             {
@@ -42,7 +42,7 @@ namespace AtmoSync.Web.Services
         {
             try
             {
-                return await _httpClient.GetFromJsonAsync<ResponseModel<List<MQ7SensorDto>>>($"MQ7Sensor/latest/{count}");
+                return await _httpClient.GetFromJsonAsync<ResponseModel<List<MQ7SensorDto>>>($"api/MQ7Sensor/latest/{count}");
             }
             catch (Exception)
             {
@@ -55,7 +55,7 @@ namespace AtmoSync.Web.Services
         {
             try
             {
-                var response = await _httpClient.PostAsJsonAsync("MQ7Sensor", dto);
+                var response = await _httpClient.PostAsJsonAsync("api/MQ7Sensor", dto);
 
                 return await response.Content.ReadFromJsonAsync<ResponseModel<long>>();
             }
@@ -69,7 +69,7 @@ namespace AtmoSync.Web.Services
         {
             try
             {
-                var url = $"MQ7Sensor/range?fromDate={fromDate:yyyy-MM-dd}&toDate={toDate:yyyy-MM-dd}";
+                var url = $"api/MQ7Sensor/range?fromDate={fromDate:yyyy-MM-dd}&toDate={toDate:yyyy-MM-dd}";
 
                 return await _httpClient.GetFromJsonAsync<ResponseModel<List<MQ7SensorDto>>>(url);
             }
@@ -84,7 +84,7 @@ namespace AtmoSync.Web.Services
         {
             try
             {
-                var response = await _httpClient.DeleteAsync($"MQ7Sensor/{id}");
+                var response = await _httpClient.DeleteAsync($"api/MQ7Sensor/{id}");
 
                 return await response.Content.ReadFromJsonAsync<ResponseModel<int>>();
             }
@@ -97,7 +97,7 @@ namespace AtmoSync.Web.Services
         {
             try
             {
-                var response = await _httpClient.PutAsync($"MQ7Sensor/{id}/status?inActive={inActive}", null);
+                var response = await _httpClient.PutAsync($"api/MQ7Sensor/{id}/status?inActive={inActive}", null);
 
                 return await response.Content.ReadFromJsonAsync<ResponseModel<int>>();
             }

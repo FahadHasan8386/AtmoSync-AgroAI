@@ -19,6 +19,7 @@ namespace AtmoSync.API.Controllers
 
         // GET ALL
         [HttpGet]
+        [AllowAnonymous]
         public async Task<IActionResult> GetAll()
         {
             var result = await _service.GetAllAsync();
@@ -27,6 +28,7 @@ namespace AtmoSync.API.Controllers
 
         // GET LATEST
         [HttpGet("latest")]
+        [AllowAnonymous]
         public async Task<IActionResult> GetLatest()
         {
             var result = await _service.GetLatestAsync();
@@ -35,6 +37,7 @@ namespace AtmoSync.API.Controllers
 
         // GET LAST N READINGS
         [HttpGet("latest/{count}")]
+        [AllowAnonymous]
         public async Task<IActionResult> GetLatestReadings(int count)
         {
             var result = await _service.GetLatestReadingsAsync(count);
@@ -42,6 +45,7 @@ namespace AtmoSync.API.Controllers
         }
 
         // GET BY DATE RANGE
+        [Authorize(Roles = "Admin")]
         [HttpGet("range")]
         public async Task<IActionResult> GetByDateRange(
             [FromQuery] DateTime fromDate,
@@ -52,6 +56,7 @@ namespace AtmoSync.API.Controllers
         }
 
         // CREATE
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] MQ136SensorDto dto)
         {
@@ -60,6 +65,7 @@ namespace AtmoSync.API.Controllers
         }
 
         // DELETE
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{id:long}")]
         public async Task<IActionResult> Delete(long id)
         {
@@ -67,6 +73,7 @@ namespace AtmoSync.API.Controllers
             return StatusCode(result.Code, result);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPut("{id}/status")]
         public async Task<IActionResult> UpdateStatus(long id, [FromQuery] bool inActive)
         {

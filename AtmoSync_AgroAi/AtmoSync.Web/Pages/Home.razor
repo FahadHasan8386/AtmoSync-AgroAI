@@ -2,273 +2,589 @@
 
 @using AtmoSync.Web.Services
 @using AtmoSync.Shared.Models.DtoModels
-
+@using Microsoft.JSInterop
 
 @inject DhtSensorApiService DhtService
 @inject MQ136SensorApiService MQ136Service
 @inject MQ7SensorApiService MQ7Service
+@inject IJSRuntime JS
 
-<PageTitle>Dashboard</PageTitle>
+
+<PageTitle>AtmoSync Dashboard</PageTitle>
+
 
 <div class="container-fluid py-4">
 
+
     <!-- Header -->
+
     <div class="d-flex justify-content-between align-items-center mb-4">
+
+
         <div>
-            <h2 class="fw-bold text-dark mb-1">
-                IoT Monitoring Dashboard
+
+            <h2 class="fw-bold">
+                🌐 IoT Monitoring Dashboard
             </h2>
 
-            <p class="text-muted mb-0">
-                Real-time environmental monitoring system
+            <p class="text-muted">
+                Real-time Environmental Monitoring System
             </p>
+
         </div>
+
 
         <button class="btn btn-primary"
                 @onclick="RefreshData">
-            <i class="bi bi-arrow-clockwise me-2"></i>
-            Refresh
+
+            🔄 Refresh
+
         </button>
+
+
     </div>
+
+
+
+
+    <!-- Sensor Cards -->
 
     <div class="row g-4">
 
+
         <!-- DHT22 -->
+
+
         <div class="col-lg-4 col-md-6">
+
+
             <div class="card shadow border-0 h-100">
+
 
                 <div class="card-header bg-danger text-white">
-                    <h5 class="mb-0">
-                        🌡️ DHT22 Sensor
-                    </h5>
+
+                    🌡️ DHT22 Sensor
+
                 </div>
 
-                <div class="card-body">
 
-                    @if (Dht == null)
-                    {
-                        <div class="text-center py-5">
-                            <div class="spinner-border text-danger"></div>
-                        </div>
-                    }
-                    else
-                    {
-                        <div class="text-center mb-4">
-                            <h1 class="display-5 fw-bold text-danger">
-                                @Dht.Temperature°C
-                            </h1>
 
-                            <h4 class="text-primary">
-                                💧 @Dht.Humidity%
-                            </h4>
-                        </div>
+                <div class="card-body text-center">
+
+
+                    @if (Dht != null)
+                    {
+
+                        <h1 class="display-5 fw-bold text-danger">
+
+                            @Dht.Temperature °C
+
+                        </h1>
+
+
+                        <h4 class="text-primary">
+
+                            💧 @Dht.Humidity %
+
+                        </h4>
+
 
                         <hr />
 
-                        <p class="mb-2">
-                            <strong>Created By:</strong>
-                            @Dht.CreatedBy
-                        </p>
 
-                        <p class="mb-2">
-                            <strong>Created At:</strong>
+                        <small>
+                            Last Update:
                             @Dht.CreatedAt.ToString("dd MMM yyyy hh:mm tt")
-                        </p>
+                        </small>
 
-                        <p class="mb-2">
-                            <strong>Modified By:</strong>
-                            @(Dht.ModifiedBy ?? "-")
-                        </p>
-
-                        <p class="mb-2">
-                            <strong>Status:</strong>
-
-                            @if (Dht.InActive)
-                            {
-                                <span class="badge bg-danger">
-                                    Inactive
-                                </span>
-                            }
-                            else
-                            {
-                                <span class="badge bg-success">
-                                    Active
-                                </span>
-                            }
-                        </p>
+                    }
+                    else
+                    {
+                        <div class="spinner-border"></div>
                     }
 
+
                 </div>
+
+
             </div>
+
+
         </div>
+
+
+
+
 
         <!-- MQ136 -->
+
+
         <div class="col-lg-4 col-md-6">
+
+
             <div class="card shadow border-0 h-100">
 
-                <div class="card-header bg-warning text-dark">
-                    <h5 class="mb-0">
-                        ☣️ MQ-136 Sensor
-                    </h5>
+
+                <div class="card-header bg-warning">
+
+                    ☣️ MQ136 Sensor
+
                 </div>
 
-                <div class="card-body">
 
-                    @if (MQ136 == null)
+                <div class="card-body text-center">
+
+
+                    @if (MQ136 != null)
                     {
-                        <div class="text-center py-5">
-                            <div class="spinner-border text-warning"></div>
-                        </div>
-                    }
-                    else
-                    {
-                        <div class="text-center mb-4">
 
-                            <h1 class="display-5 fw-bold text-warning">
-                                @MQ136.H2SLevel
-                            </h1>
+                        <h1 class="display-5 fw-bold text-warning">
 
-                            <p class="text-muted">
-                                H₂S Concentration
-                            </p>
+                            @MQ136.H2SLevel
 
-                        </div>
+                        </h1>
+
+
+                        <p>
+                            H₂S Concentration
+                        </p>
+
 
                         <hr />
 
-                        <p class="mb-2">
-                            <strong>Created By:</strong>
-                            @MQ136.CreatedBy
-                        </p>
 
-                        <p class="mb-2">
-                            <strong>Created At:</strong>
+                        <small>
                             @MQ136.CreatedAt.ToString("dd MMM yyyy hh:mm tt")
-                        </p>
+                        </small>
 
-                        <p class="mb-2">
-                            <strong>Status:</strong>
-
-                            @if (MQ136.InActive)
-                            {
-                                <span class="badge bg-danger">
-                                    Inactive
-                                </span>
-                            }
-                            else
-                            {
-                                <span class="badge bg-success">
-                                    Active
-                                </span>
-                            }
-                        </p>
+                    }
+                    else
+                    {
+                        <div class="spinner-border"></div>
                     }
 
+
                 </div>
+
+
             </div>
+
+
         </div>
+
+
+
+
+
 
         <!-- MQ7 -->
+
+
         <div class="col-lg-4 col-md-6">
+
+
             <div class="card shadow border-0 h-100">
 
+
                 <div class="card-header bg-info text-white">
-                    <h5 class="mb-0">
-                        🏭 MQ-7 Sensor
-                    </h5>
+
+                    🏭 MQ7 Sensor
+
                 </div>
 
-                <div class="card-body">
 
-                    @if (MQ7 == null)
+
+                <div class="card-body text-center">
+
+
+                    @if (MQ7 != null)
                     {
-                        <div class="text-center py-5">
-                            <div class="spinner-border text-info"></div>
-                        </div>
-                    }
-                    else
-                    {
-                        <div class="text-center mb-4">
 
-                            <h1 class="display-5 fw-bold text-info">
-                                @MQ7.COLevel
-                            </h1>
 
-                            <p class="text-muted">
-                                CO Concentration
-                            </p>
+                        <h1 class="display-5 fw-bold text-info">
 
-                        </div>
+                            @MQ7.COLevel
+
+                        </h1>
+
+
+                        <p>
+                            CO Concentration
+                        </p>
+
 
                         <hr />
 
-                        <p class="mb-2">
-                            <strong>Created By:</strong>
-                            @MQ7.CreatedBy
-                        </p>
 
-                        <p class="mb-2">
-                            <strong>Created At:</strong>
+                        <small>
                             @MQ7.CreatedAt.ToString("dd MMM yyyy hh:mm tt")
-                        </p>
+                        </small>
 
-                        <p class="mb-2">
-                            <strong>Status:</strong>
 
-                            @if (MQ7.InActive)
-                            {
-                                <span class="badge bg-danger">
-                                    Inactive
-                                </span>
-                            }
-                            else
-                            {
-                                <span class="badge bg-success">
-                                    Active
-                                </span>
-                            }
-                        </p>
+                    }
+                    else
+                    {
+                        <div class="spinner-border"></div>
                     }
 
+
+
                 </div>
+
+
             </div>
+
+
         </div>
+
 
     </div>
 
+
+
+
+
+
+
+    <!-- Charts -->
+
+
+    <div class="mt-5">
+
+
+        <h3 class="fw-bold mb-4">
+
+            📊 Sensor Analytics
+
+        </h3>
+
+
+
+        <div class="row g-4">
+
+
+
+            <!-- Temperature Chart -->
+
+
+            <div class="col-lg-6">
+
+
+                <div class="card shadow border-0">
+
+
+                    <div class="card-header bg-danger text-white">
+
+                        Temperature History
+
+                    </div>
+
+
+                    <div class="card-body">
+
+                        <canvas id="tempChart"
+                                height="120">
+                        </canvas>
+
+                    </div>
+
+
+                </div>
+
+
+            </div>
+
+
+
+
+
+            <!-- Humidity -->
+
+
+            <div class="col-lg-6">
+
+
+                <div class="card shadow border-0">
+
+
+                    <div class="card-header bg-primary text-white">
+
+                        Humidity History
+
+                    </div>
+
+
+                    <div class="card-body">
+
+                        <canvas id="humidityChart"
+                                height="120">
+                        </canvas>
+
+                    </div>
+
+
+                </div>
+
+
+            </div>
+
+
+
+
+
+
+            <!-- MQ7 -->
+
+
+            <div class="col-lg-6">
+
+
+                <div class="card shadow border-0">
+
+
+                    <div class="card-header bg-info text-white">
+
+                        CO Level Analytics
+
+                    </div>
+
+
+                    <div class="card-body">
+
+
+                        <canvas id="mq7Chart"
+                                height="120">
+                        </canvas>
+
+
+                    </div>
+
+
+                </div>
+
+
+            </div>
+
+
+
+
+
+
+
+            <!-- MQ136 -->
+
+
+            <div class="col-lg-6">
+
+
+                <div class="card shadow border-0">
+
+
+                    <div class="card-header bg-warning">
+
+                        H₂S Level Analytics
+
+                    </div>
+
+
+                    <div class="card-body">
+
+
+                        <canvas id="mq136Chart"
+                                height="120">
+                        </canvas>
+
+
+                    </div>
+
+
+                </div>
+
+
+            </div>
+
+
+
+
+        </div>
+
+
+    </div>
+
+
+
+
 </div>
+
+
+
+
 
 @code {
 
+
     private DHTSensorDto? Dht;
+
     private MQ136SensorDto? MQ136;
+
     private MQ7SensorDto? MQ7;
+
+
+
+    private List<DHTSensorDto> DhtHistory = new();
+
+    private List<MQ136SensorDto> MQ136History = new();
+
+    private List<MQ7SensorDto> MQ7History = new();
+
+
+
+
 
     protected override async Task OnInitializedAsync()
     {
         await LoadData();
     }
 
+
+
+
+
     private async Task LoadData()
     {
-        var d = await DhtService.GetLatestAsync();
 
-        if (d?.Data != null)
-            Dht = d.Data;
 
-        var m1 = await MQ136Service.GetLatestAsync();
+        var dht =
+        await DhtService.GetLatestAsync();
 
-        if (m1?.Data != null)
-            MQ136 = m1.Data;
 
-        var m2 = await MQ7Service.GetLatestAsync();
+        Dht = dht?.Data;
 
-        if (m2?.Data != null)
-            MQ7 = m2.Data;
+
+
+        var mq136 =
+        await MQ136Service.GetLatestAsync();
+
+
+        MQ136 = mq136?.Data;
+
+
+
+
+        var mq7 =
+        await MQ7Service.GetLatestAsync();
+
+
+        MQ7 = mq7?.Data;
+
+
+
+
+        var dhtHistory =
+        await DhtService.GetLatestReadingsAsync(20);
+
+
+        if (dhtHistory?.Data != null)
+
+            DhtHistory = dhtHistory.Data;
+
+
+
+
+        var mq136History =
+        await MQ136Service.GetLatestReadingsAsync(20);
+
+
+        if (mq136History?.Data != null)
+
+            MQ136History = mq136History.Data;
+
+
+
+
+        var mq7History =
+        await MQ7Service.GetLatestReadingsAsync(20);
+
+
+        if (mq7History?.Data != null)
+
+            MQ7History = mq7History.Data;
+
+
+
     }
+
+
+
+
+
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+
+
+        if (firstRender)
+        {
+
+
+            await Task.Delay(800);
+
+
+
+            await JS.InvokeVoidAsync(
+            "renderTempChart",
+            DhtHistory.Select(x => x.CreatedAt.ToString("HH:mm")).ToArray(),
+            DhtHistory.Select(x => x.Temperature).ToArray()
+            );
+
+
+
+
+            await JS.InvokeVoidAsync(
+            "renderHumidityChart",
+            DhtHistory.Select(x => x.CreatedAt.ToString("HH:mm")).ToArray(),
+            DhtHistory.Select(x => x.Humidity).ToArray()
+            );
+
+
+
+
+            await JS.InvokeVoidAsync(
+            "renderMQ7Chart",
+            MQ7History.Select(x => x.CreatedAt.ToString("HH:mm")).ToArray(),
+            MQ7History.Select(x => x.COLevel).ToArray()
+            );
+
+
+
+
+            await JS.InvokeVoidAsync(
+            "renderMQ136Chart",
+            MQ136History.Select(x => x.CreatedAt.ToString("HH:mm")).ToArray(),
+            MQ136History.Select(x => x.H2SLevel).ToArray()
+            );
+
+
+        }
+
+
+    }
+
+
+
+
+
+
 
     private async Task RefreshData()
     {
+
         await LoadData();
+
+        StateHasChanged();
+
     }
+
+
+
 }

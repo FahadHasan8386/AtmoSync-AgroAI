@@ -191,17 +191,8 @@
         </div>
     </div>
 
-
-
-
-
-
-
     <!-- Charts -->
-
-
     <div class="mt-5">
-
 
         <h3 class="fw-bold mb-4">
 
@@ -209,20 +200,13 @@
 
         </h3>
 
-
-
         <div class="row g-4">
-
-
 
             <!-- Temperature Chart -->
 
-
             <div class="col-lg-6">
 
-
                 <div class="card shadow border-0">
-
 
                     <div class="card-header bg-danger text-white">
 
@@ -245,25 +229,16 @@
 
             </div>
 
-
-
-
-
             <!-- Humidity -->
-
-
             <div class="col-lg-6">
 
-
                 <div class="card shadow border-0">
-
 
                     <div class="card-header bg-primary text-white">
 
                         Humidity History
 
                     </div>
-
 
                     <div class="card-body">
 
@@ -280,12 +255,7 @@
             </div>
 
 
-
-
-
-
             <!-- MQ7 -->
-
 
             <div class="col-lg-6">
 
@@ -317,11 +287,6 @@
             </div>
 
 
-
-
-
-
-
             <!-- MQ136 -->
 
 
@@ -337,9 +302,7 @@
 
                     </div>
 
-
                     <div class="card-body">
-
 
                         <canvas id="mq136Chart"
                                 height="120">
@@ -354,21 +317,13 @@
 
             </div>
 
-
-
-
         </div>
 
 
     </div>
 
 
-
-
 </div>
-
-
-
 
 
 @code {
@@ -390,31 +345,22 @@
 
 
 
-
-
     protected override async Task OnInitializedAsync()
     {
         await LoadData();
     }
 
 
-
-
-
     private async Task LoadData()
     {
-
-
-        var dht =
-        await DhtService.GetLatestAsync();
+        var dht = await DhtService.GetLatestAsync();
 
 
         Dht = dht?.Data;
 
 
 
-        var mq136 =
-        await MQ136Service.GetLatestAsync();
+        var mq136 = await MQ136Service.GetLatestAsync();
 
 
         MQ136 = mq136?.Data;
@@ -422,17 +368,12 @@
 
 
 
-        var mq7 =
-        await MQ7Service.GetLatestAsync();
+        var mq7 = await MQ7Service.GetLatestAsync();
 
 
         MQ7 = mq7?.Data;
 
-
-
-
-        var dhtHistory =
-        await DhtService.GetLatestReadingsAsync(20);
+        var dhtHistory = await DhtService.GetLatestReadingsAsync(20);
 
 
         if (dhtHistory?.Data != null)
@@ -442,8 +383,7 @@
 
 
 
-        var mq136History =
-        await MQ136Service.GetLatestReadingsAsync(20);
+        var mq136History = await MQ136Service.GetLatestReadingsAsync(20);
 
 
         if (mq136History?.Data != null)
@@ -451,24 +391,14 @@
             MQ136History = mq136History.Data;
 
 
-
-
-        var mq7History =
-        await MQ7Service.GetLatestReadingsAsync(20);
+        var mq7History = await MQ7Service.GetLatestReadingsAsync(20);
 
 
         if (mq7History?.Data != null)
 
             MQ7History = mq7History.Data;
 
-
-
     }
-
-
-
-
-
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -520,11 +450,6 @@
 
 
     }
-
-
-
-
-
 
 
     private async Task RefreshData()

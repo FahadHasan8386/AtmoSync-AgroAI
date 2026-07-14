@@ -17,7 +17,6 @@
 
 
     <!-- Header -->
-
     <div class="d-flex justify-content-between align-items-center mb-4">
 
 
@@ -33,7 +32,6 @@
 
         </div>
 
-
         <button class="btn btn-primary"
                 @onclick="RefreshData">
 
@@ -41,20 +39,12 @@
 
         </button>
 
-
     </div>
-
-
-
 
     <!-- Sensor Cards -->
 
     <div class="row g-4">
-
-
         <!-- DHT22 -->
-
-
         <div class="col-lg-4 col-md-6">
 
 
@@ -103,34 +93,21 @@
                         <div class="spinner-border"></div>
                     }
 
-
                 </div>
-
-
             </div>
-
-
         </div>
 
 
 
-
-
         <!-- MQ136 -->
-
-
         <div class="col-lg-4 col-md-6">
 
-
             <div class="card shadow border-0 h-100">
-
-
                 <div class="card-header bg-warning">
 
                     ☣️ MQ136 Sensor
 
                 </div>
-
 
                 <div class="card-body text-center">
 
@@ -144,42 +121,23 @@
 
                         </h1>
 
-
                         <p>
                             H₂S Concentration
                         </p>
-
-
                         <hr />
-
-
                         <small>
                             @MQ136.CreatedAt.ToString("dd MMM yyyy hh:mm tt")
                         </small>
-
                     }
                     else
                     {
                         <div class="spinner-border"></div>
                     }
-
-
                 </div>
-
-
             </div>
-
-
         </div>
 
-
-
-
-
-
         <!-- MQ7 -->
-
-
         <div class="col-lg-4 col-md-6">
 
 
@@ -227,17 +185,10 @@
                         <div class="spinner-border"></div>
                     }
 
-
-
                 </div>
 
-
             </div>
-
-
         </div>
-
-
     </div>
 
 

@@ -6,288 +6,210 @@
 
 @inject MQ7SensorApiService SensorService
 
-<div class="container-fluid py-4">
-
-    <!-- Header -->
-    <DashboardHeader Title="🌡️ MQ7 IoT Monitoring Dashboard"
-                     Description="CO2 sensor data"
-                     RefreshClicked="LoadData" />
-
-    <!-- Dashboard Cards -->
-    <div class="row g-4 mb-4">
-
-        <div class="col-lg-3 col-md-6">
-            <div class="card border-0 shadow-sm bg-danger text-white h-100">
-                <div class="card-body">
-                    <small class="text-white-50">Gas Level</small>
-                    <h2 class="fw-bold mt-2">
-                        🟢 @(LatestSensor?.COLevel ?? 0) ppm
-                    </h2>
-                    <small>Latest Reading</small>
-                </div>
+<div class="dashboard-shell">
+    <section class="hero-panel">
+        <div class="hero-copy">
+            <p class="eyebrow">MQ7 carbon monitoring</p>
+            <h1>Carbon monoxide readings presented with a professional operational layout.</h1>
+            <p class="hero-text">
+                Review current gas levels, inspect recent activity, and manage sensor records from one responsive dashboard.
+            </p>
+            <div class="hero-actions">
+                <button class="btn btn-light text-primary" @onclick="LoadData">
+                    <i class="bi bi-arrow-clockwise"></i> Refresh data
+                </button>
+                <span class="status-pill">CO monitoring active</span>
             </div>
         </div>
 
-        <div class="col-lg-3 col-md-6">
-            <div class="card border-0 shadow-sm bg-success text-white h-100">
-                <div class="card-body">
-                    <small class="text-white-50">Total Records</small>
-                    <h2 class="fw-bold mt-2">
-                        @Sensors.Count
-                    </h2>
-                    <small>Database Entries</small>
-                </div>
+        <div class="hero-summary">
+            <div class="summary-card">
+                <span class="summary-label">Latest CO level</span>
+                <strong>@(LatestSensor?.COLevel ?? 0) ppm</strong>
+                <small>Current carbon monoxide concentration</small>
+            </div>
+            <div class="summary-card">
+                <span class="summary-label">Active sensors</span>
+                <strong>@Sensors.Count(s => !s.InActive)</strong>
+                <small>Currently active units</small>
+            </div>
+        </div>
+    </section>
+
+    <section class="stats-grid">
+        <div class="stat-card stat-card-danger">
+            <div class="stat-icon">🏭</div>
+            <div>
+                <p class="stat-label">CO level</p>
+                <h3>@(LatestSensor?.COLevel ?? 0) ppm</h3>
+                <span>Latest reading</span>
             </div>
         </div>
 
-        <div class="col-lg-3 col-md-6">
-            <div class="card border-0 shadow-sm bg-warning h-100">
-                <div class="card-body">
-                    <small>Last Update</small>
-                    <h6 class="fw-bold mt-2">
-                        @(LatestSensor?.CreatedAt.ToString("dd MMM yyyy") ?? "-")
-                    </h6>
-                    <small>
-                        @(LatestSensor?.CreatedAt.ToString("hh:mm tt") ?? "-")
-                    </small>
-                </div>
+        <div class="stat-card stat-card-success">
+            <div class="stat-icon">📦</div>
+            <div>
+                <p class="stat-label">Total records</p>
+                <h3>@Sensors.Count</h3>
+                <span>Database entries</span>
             </div>
         </div>
 
-        <div class="col-lg-3 col-md-6">
-            <div class="card border-0 shadow-sm bg-primary text-white h-100">
-                <div class="card-body">
-                    <small class="text-white-50">Active Sensors</small>
-                    <h2 class="fw-bold mt-2">
-                        @Sensors.Count(s => !s.InActive)
-                    </h2>
-                    <small>Currently Active</small>
-                </div>
+        <div class="stat-card stat-card-warning">
+            <div class="stat-icon">🕒</div>
+            <div>
+                <p class="stat-label">Last update</p>
+                <h3>@(LatestSensor?.CreatedAt.ToString("dd MMM") ?? "-")</h3>
+                <span>@(LatestSensor?.CreatedAt.ToString("hh:mm tt") ?? "-")</span>
             </div>
         </div>
 
-    </div>
+        <div class="stat-card stat-card-primary">
+            <div class="stat-icon">✅</div>
+            <div>
+                <p class="stat-label">Active sensors</p>
+                <h3>@Sensors.Count(s => !s.InActive)</h3>
+                <span>Currently active</span>
+            </div>
+        </div>
+    </section>
 
-    <!-- Date Filter -->
-    <div class="card shadow-sm border-0 mb-4">
-
-        <div class="card-header bg-secondary text-white">
-            <i class="bi bi-calendar-range"></i>
-            Filter By Date Range
+    <section class="analytics-section">
+        <div class="section-heading">
+            <div>
+                <p class="eyebrow">Filter and review</p>
+                <h2>Gas records</h2>
+            </div>
+            <span class="section-badge">Latest 5 readings</span>
         </div>
 
-        <div class="card-body">
-
-            <div class="row g-3">
-
+        <div class="panel-card sensor-filter-card mb-4">
+            <div class="row g-3 align-items-end">
                 <div class="col-md-4">
-                    <label class="form-label">From Date</label>
-                    <InputDate class="form-control"
-                               @bind-Value="FromDate" />
+                    <label class="form-label">From date</label>
+                    <InputDate class="form-control" @bind-Value="FromDate" />
                 </div>
-
                 <div class="col-md-4">
-                    <label class="form-label">To Date</label>
-                    <InputDate class="form-control"
-                               @bind-Value="ToDate" />
+                    <label class="form-label">To date</label>
+                    <InputDate class="form-control" @bind-Value="ToDate" />
                 </div>
-
-                <div class="col-md-4 d-flex align-items-end">
-
-                    <button class="btn btn-primary me-2"
-                            @onclick="FilterByDate">
-                        <i class="bi bi-search"></i>
-                        Search
+                <div class="col-md-4 d-flex gap-2">
+                    <button class="btn btn-primary" @onclick="FilterByDate">
+                        <i class="bi bi-search"></i> Search
                     </button>
-
-                    <button class="btn btn-outline-secondary"
-                            @onclick="LoadData">
+                    <button class="btn btn-outline-secondary" @onclick="LoadData">
                         Reset
                     </button>
-
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Recent Readings -->
-    <div class="card shadow-sm border-0 mb-4">
-
-        <div class="card-header bg-info text-white d-flex justify-content-between">
-            <span>
-                <i class="bi bi-clock-history"></i>
-                Recent Readings
-            </span>
-
-            <span class="badge bg-light text-dark">
-                Last 5 Records
-            </span>
-        </div>
-
-        <div class="table-responsive">
-
-            <table class="table table-striped table-hover mb-0">
-
-                <thead class="table-dark">
-                    <tr>
-                        <th>#</th>
-                        <th>Gas Level</th>
-                        <th>Created By</th>
-                        <th>Date Time</th>
-                    </tr>
-                </thead>
-
-                <tbody>
-
-                    @if (RecentReadings.Any())
-                    {
-                        int recentIndex = 1;
-
-                        @foreach (var item in RecentReadings)
-                        {
-                            <tr>
-                                <td>@recentIndex</td>
-
-                                <td>
-                                    <span class="badge bg-danger">
-                                        @item.COLevel ppm
-                                    </span>
-                                </td>
-
-                                <td>@item.CreatedBy</td>
-
-                                <td>
-                                    @item.CreatedAt.ToString("dd MMM yyyy hh:mm tt")
-                                </td>
-                            </tr>
-
-                            recentIndex++;
-                        }
-                    }
-
-                </tbody>
-
-            </table>
-
-        </div>
-
-    </div>
-
-    <!-- Main Table -->
-    <div class="card shadow-sm border-0">
-
-        <div class="card-header bg-dark text-white d-flex justify-content-between">
-            <span>
-                <i class="bi bi-database"></i>
-                Sensor Records
-            </span>
-
-            <span class="badge bg-light text-dark">
-                @Sensors.Count Records
-            </span>
-        </div>
-
-        <div class="card-body">
-
-            @if (IsLoading)
-            {
-                <div class="text-center py-5">
-                    <div class="spinner-border text-primary"></div>
-                </div>
-            }
-            else
-            {
+        <div class="panel-card mb-4">
+            <div class="panel-card__header d-flex justify-content-between align-items-center">
+                <span>Recent readings</span>
+                <span class="badge bg-primary">Last 5 records</span>
+            </div>
+            <div class="panel-card__body">
                 <div class="table-responsive">
-
-                    <table class="table table-hover align-middle">
-
-                        <thead class="table-light">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead>
                             <tr>
                                 <th>#</th>
-                                <th>ID</th>
-                                <th>Gas Level</th>
-                                <th>Created By</th>
-                                <th>Created At</th>
-                                <th>Status</th>
-                                <th>Action</th>
+                                <th>Gas level</th>
+                                <th>Created by</th>
+                                <th>Date time</th>
                             </tr>
                         </thead>
-
                         <tbody>
-
-                            @if (Sensors.Any())
+                            @if (RecentReadings.Any())
                             {
-                                int index = 1;
-
-                                @foreach (var item in Sensors)
+                                int recentIndex = 1;
+                                @foreach (var item in RecentReadings)
                                 {
                                     <tr>
-
-                                        <td>@index</td>
-
-                                        <td>
-                                            <span class="badge bg-secondary">
-                                                #@item.Id
-                                            </span>
-                                        </td>
-
-                                        <td>
-                                            <span class="badge bg-danger">
-                                                @item.COLevel ppm
-                                            </span>
-                                        </td>
-
+                                        <td>@recentIndex</td>
+                                        <td><span class="badge bg-danger">@item.COLevel ppm</span></td>
                                         <td>@item.CreatedBy</td>
-
-                                        <td>
-                                            @item.CreatedAt.ToString("dd MMM yyyy hh:mm tt")
-                                        </td>
-
-                                        <td>
-                                            @if (item.InActive)
-                                            {
-                                                <span class="badge bg-danger">
-                                                    Inactive
-                                                </span>
-                                            }
-                                            else
-                                            {
-                                                <span class="badge bg-success">
-                                                    Active
-                                                </span>
-                                            }
-                                        </td>
-
-                                        <SensorActions InActive="@item.InActive"
-                                                       ToggleStatus="@(x => ChangeStatus(item.Id,x))"
-                                                       Delete="@( () => DeleteSensor(item.Id))" />
-
+                                        <td>@item.CreatedAt.ToString("dd MMM yyyy hh:mm tt")</td>
                                     </tr>
-
-                                    index++;
+                                    recentIndex++;
                                 }
                             }
-                            else
-                            {
-                                <tr>
-                                    <td colspan="7"
-                                        class="text-center text-muted py-4">
-                                        No sensor data found.
-                                    </td>
-                                </tr>
-                            }
-
                         </tbody>
-
                     </table>
-
                 </div>
-            }
-
+            </div>
         </div>
 
-    </div>
-
+        <div class="panel-card">
+            <div class="panel-card__header d-flex justify-content-between align-items-center">
+                <span>Sensor records</span>
+                <span class="badge bg-dark">@Sensors.Count records</span>
+            </div>
+            <div class="panel-card__body">
+                @if (IsLoading)
+                {
+                    <div class="text-center py-5">
+                        <div class="spinner-border text-primary"></div>
+                    </div>
+                }
+                else
+                {
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>ID</th>
+                                    <th>Gas level</th>
+                                    <th>Created by</th>
+                                    <th>Created at</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Sensors.Any())
+                                {
+                                    int index = 1;
+                                    @foreach (var item in Sensors)
+                                    {
+                                        <tr>
+                                            <td>@index</td>
+                                            <td><span class="badge bg-secondary">#@item.Id</span></td>
+                                            <td><span class="badge bg-danger">@item.COLevel ppm</span></td>
+                                            <td>@item.CreatedBy</td>
+                                            <td>@item.CreatedAt.ToString("dd MMM yyyy hh:mm tt")</td>
+                                            <td>
+                                                @if (item.InActive)
+                                                {
+                                                    <span class="badge bg-danger">Inactive</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-success">Active</span>
+                                                }
+                                            </td>
+                                            <SensorActions InActive="@item.InActive"
+                                                           ToggleStatus="@(x => ChangeStatus(item.Id,x))"
+                                                           Delete="@( () => DeleteSensor(item.Id))" />
+                                        </tr>
+                                        index++;
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="7" class="text-center text-muted py-4">No sensor data found.</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </div>
+        </div>
+    </section>
 </div>
 
 @code {

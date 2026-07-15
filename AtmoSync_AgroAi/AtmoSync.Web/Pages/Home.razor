@@ -13,316 +13,149 @@
 <PageTitle>AtmoSync Dashboard</PageTitle>
 
 
-<div class="container-fluid py-4">
-
-
-    <!-- Header -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-
-
-        <div>
-
-            <h2 class="fw-bold">
-                🌐 IoT Monitoring Dashboard
-            </h2>
-
-            <p class="text-muted">
-                Real-time Environmental Monitoring System
+<div class="dashboard-shell">
+    <section class="hero-panel">
+        <div class="hero-copy">
+            <p class="eyebrow">AgroIoT operations center</p>
+            <h1>Environmental monitoring designed for dependable farm intelligence.</h1>
+            <p class="hero-text">
+                Track live temperature, humidity, carbon monoxide, and hydrogen sulfide readings from your connected sensors in a clear, professional dashboard.
             </p>
-
-        </div>
-
-        <button class="btn btn-primary"
-                @onclick="RefreshData">
-
-            🔄 Refresh
-
-        </button>
-
-    </div>
-
-    <!-- Sensor Cards -->
-
-    <div class="row g-4">
-        <!-- DHT22 -->
-        <div class="col-lg-4 col-md-6">
-
-
-            <div class="card shadow border-0 h-100">
-
-
-                <div class="card-header bg-danger text-white">
-
-                    🌡️ DHT22 Sensor
-
-                </div>
-
-
-
-                <div class="card-body text-center">
-
-
-                    @if (Dht != null)
-                    {
-
-                        <h1 class="display-5 fw-bold text-danger">
-
-                            @Dht.Temperature °C
-
-                        </h1>
-
-
-                        <h4 class="text-primary">
-
-                            💧 @Dht.Humidity %
-
-                        </h4>
-
-
-                        <hr />
-
-
-                        <small>
-                            Last Update:
-                            @Dht.CreatedAt.ToString("dd MMM yyyy hh:mm tt")
-                        </small>
-
-                    }
-                    else
-                    {
-                        <div class="spinner-border"></div>
-                    }
-
-                </div>
+            <div class="hero-actions">
+                <button class="btn btn-primary" @onclick="RefreshData">
+                    <i class="bi bi-arrow-clockwise"></i> Refresh data
+                </button>
+                <span class="status-pill">Live updates from connected sensors</span>
             </div>
         </div>
 
+        <div class="hero-summary">
+            <div class="summary-card">
+                <span class="summary-label">Current status</span>
+                <strong>Stable monitoring</strong>
+                <small>All sensor streams are active.</small>
+            </div>
+            <div class="summary-card">
+                <span class="summary-label">Last refreshed</span>
+                <strong>@(Dht?.CreatedAt.ToString("dd MMM yyyy hh:mm tt") ?? "Loading...")</strong>
+                <small>Latest dataset timestamp</small>
+            </div>
+        </div>
+    </section>
 
-
-        <!-- MQ136 -->
-        <div class="col-lg-4 col-md-6">
-
-            <div class="card shadow border-0 h-100">
-                <div class="card-header bg-warning">
-
-                    ☣️ MQ136 Sensor
-
-                </div>
-
-                <div class="card-body text-center">
-
-
-                    @if (MQ136 != null)
-                    {
-
-                        <h1 class="display-5 fw-bold text-warning">
-
-                            @MQ136.H2SLevel
-
-                        </h1>
-
-                        <p>
-                            H₂S Concentration
-                        </p>
-                        <hr />
-                        <small>
-                            @MQ136.CreatedAt.ToString("dd MMM yyyy hh:mm tt")
-                        </small>
-                    }
-                    else
-                    {
-                        <div class="spinner-border"></div>
-                    }
-                </div>
+    <section class="stats-grid">
+        <div class="stat-card stat-card-danger">
+            <div class="stat-icon">🌡️</div>
+            <div>
+                <p class="stat-label">Temperature</p>
+                @if (Dht != null)
+                {
+                    <h3>@Dht.Temperature °C</h3>
+                    <span>Air temperature at the sensing node</span>
+                }
+                else
+                {
+                    <div class="spinner-border spinner-border-sm"></div>
+                }
             </div>
         </div>
 
-        <!-- MQ7 -->
-        <div class="col-lg-4 col-md-6">
-
-
-            <div class="card shadow border-0 h-100">
-
-
-                <div class="card-header bg-info text-white">
-
-                    🏭 MQ7 Sensor
-
-                </div>
-
-
-
-                <div class="card-body text-center">
-
-
-                    @if (MQ7 != null)
-                    {
-
-
-                        <h1 class="display-5 fw-bold text-info">
-
-                            @MQ7.COLevel
-
-                        </h1>
-
-
-                        <p>
-                            CO Concentration
-                        </p>
-
-
-                        <hr />
-
-
-                        <small>
-                            @MQ7.CreatedAt.ToString("dd MMM yyyy hh:mm tt")
-                        </small>
-
-
-                    }
-                    else
-                    {
-                        <div class="spinner-border"></div>
-                    }
-
-                </div>
-
+        <div class="stat-card stat-card-primary">
+            <div class="stat-icon">💧</div>
+            <div>
+                <p class="stat-label">Humidity</p>
+                @if (Dht != null)
+                {
+                    <h3>@Dht.Humidity %</h3>
+                    <span>Relative humidity tracking</span>
+                }
+                else
+                {
+                    <div class="spinner-border spinner-border-sm"></div>
+                }
             </div>
         </div>
-    </div>
 
-    <!-- Charts -->
-    <div class="mt-5">
+        <div class="stat-card stat-card-warning">
+            <div class="stat-icon">🏭</div>
+            <div>
+                <p class="stat-label">CO Level</p>
+                @if (MQ7 != null)
+                {
+                    <h3>@MQ7.COLevel</h3>
+                    <span>Carbon monoxide concentration</span>
+                }
+                else
+                {
+                    <div class="spinner-border spinner-border-sm"></div>
+                }
+            </div>
+        </div>
 
-        <h3 class="fw-bold mb-4">
+        <div class="stat-card stat-card-success">
+            <div class="stat-icon">☣️</div>
+            <div>
+                <p class="stat-label">H₂S Level</p>
+                @if (MQ136 != null)
+                {
+                    <h3>@MQ136.H2SLevel</h3>
+                    <span>Hydrogen sulfide concentration</span>
+                }
+                else
+                {
+                    <div class="spinner-border spinner-border-sm"></div>
+                }
+            </div>
+        </div>
+    </section>
 
-            📊 Sensor Analytics
-
-        </h3>
+    <section class="analytics-section">
+        <div class="section-heading">
+            <div>
+                <p class="eyebrow">Sensor analytics</p>
+                <h2>Trend overview</h2>
+            </div>
+            <span class="section-badge">Updated from latest readings</span>
+        </div>
 
         <div class="row g-4">
-
-            <!-- Temperature Chart -->
-
             <div class="col-lg-6">
-
-                <div class="card shadow border-0">
-
-                    <div class="card-header bg-danger text-white">
-
-                        Temperature History
-
+                <div class="panel-card">
+                    <div class="panel-card__header">Temperature history</div>
+                    <div class="panel-card__body">
+                        <canvas id="tempChart" height="140"></canvas>
                     </div>
-
-
-                    <div class="card-body">
-
-                        <canvas id="tempChart"
-                                height="120">
-                        </canvas>
-
-                    </div>
-
-
                 </div>
-
-
             </div>
 
-            <!-- Humidity -->
             <div class="col-lg-6">
-
-                <div class="card shadow border-0">
-
-                    <div class="card-header bg-primary text-white">
-
-                        Humidity History
-
+                <div class="panel-card">
+                    <div class="panel-card__header">Humidity history</div>
+                    <div class="panel-card__body">
+                        <canvas id="humidityChart" height="140"></canvas>
                     </div>
-
-                    <div class="card-body">
-
-                        <canvas id="humidityChart"
-                                height="120">
-                        </canvas>
-
-                    </div>
-
-
                 </div>
-
-
             </div>
 
-
-            <!-- MQ7 -->
-
             <div class="col-lg-6">
-
-
-                <div class="card shadow border-0">
-
-
-                    <div class="card-header bg-info text-white">
-
-                        CO Level Analytics
-
+                <div class="panel-card">
+                    <div class="panel-card__header">CO level analytics</div>
+                    <div class="panel-card__body">
+                        <canvas id="mq7Chart" height="140"></canvas>
                     </div>
-
-
-                    <div class="card-body">
-
-
-                        <canvas id="mq7Chart"
-                                height="120">
-                        </canvas>
-
-
-                    </div>
-
-
                 </div>
-
-
             </div>
 
-
-            <!-- MQ136 -->
-
-
             <div class="col-lg-6">
-
-
-                <div class="card shadow border-0">
-
-
-                    <div class="card-header bg-warning">
-
-                        H₂S Level Analytics
-
+                <div class="panel-card">
+                    <div class="panel-card__header">H₂S level analytics</div>
+                    <div class="panel-card__body">
+                        <canvas id="mq136Chart" height="140"></canvas>
                     </div>
-
-                    <div class="card-body">
-
-                        <canvas id="mq136Chart"
-                                height="120">
-                        </canvas>
-
-
-                    </div>
-
-
                 </div>
-
-
             </div>
-
         </div>
-
-
-    </div>
-
-
+    </section>
 </div>
 
 
@@ -454,11 +287,32 @@
 
     private async Task RefreshData()
     {
-
         await LoadData();
-
         StateHasChanged();
 
+        await JS.InvokeVoidAsync(
+            "renderTempChart",
+            DhtHistory.Select(x => x.CreatedAt.ToString("HH:mm")).ToArray(),
+            DhtHistory.Select(x => x.Temperature).ToArray()
+        );
+
+        await JS.InvokeVoidAsync(
+            "renderHumidityChart",
+            DhtHistory.Select(x => x.CreatedAt.ToString("HH:mm")).ToArray(),
+            DhtHistory.Select(x => x.Humidity).ToArray()
+        );
+
+        await JS.InvokeVoidAsync(
+            "renderMQ7Chart",
+            MQ7History.Select(x => x.CreatedAt.ToString("HH:mm")).ToArray(),
+            MQ7History.Select(x => x.COLevel).ToArray()
+        );
+
+        await JS.InvokeVoidAsync(
+            "renderMQ136Chart",
+            MQ136History.Select(x => x.CreatedAt.ToString("HH:mm")).ToArray(),
+            MQ136History.Select(x => x.H2SLevel).ToArray()
+        );
     }
 
 

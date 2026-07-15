@@ -1,5 +1,222 @@
 html, body {
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-family: 'Segoe UI', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    background: linear-gradient(135deg, #f4f8fb 0%, #eef4ff 100%);
+    color: #11213d;
+}
+
+body {
+    min-height: 100vh;
+}
+
+.navbar {
+    background: linear-gradient(90deg, #0f172a 0%, #1d4ed8 100%) !important;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.main-content {
+    padding: 1.5rem 0 2rem;
+}
+
+.site-footer {
+    background: #0f172a;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    position: sticky;
+    bottom: 0;
+    z-index: 1020;
+}
+
+.dashboard-shell {
+    padding: 1rem 1.25rem 2rem;
+}
+
+.hero-panel {
+    background: linear-gradient(135deg, #0f172a 0%, #1d4ed8 100%);
+    color: #fff;
+    border-radius: 1.25rem;
+    padding: 2rem;
+    box-shadow: 0 20px 45px rgba(15, 23, 42, 0.18);
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.hero-copy h1 {
+    font-size: clamp(1.6rem, 2.2vw, 2.3rem);
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+}
+
+.hero-text {
+    color: rgba(255,255,255,0.82);
+    max-width: 640px;
+    margin-bottom: 1rem;
+}
+
+.eyebrow {
+    text-transform: uppercase;
+    letter-spacing: 0.24em;
+    font-size: 0.74rem;
+    font-weight: 700;
+    color: #bfdbfe;
+    margin-bottom: 0.5rem;
+}
+
+.hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    align-items: center;
+}
+
+.status-pill, .section-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.45rem 0.8rem;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    background: rgba(255,255,255,0.16);
+    color: #eff6ff;
+}
+
+.hero-summary {
+    display: grid;
+    gap: 0.9rem;
+}
+
+.summary-card {
+    background: rgba(255,255,255,0.14);
+    border: 1px solid rgba(255,255,255,0.16);
+    border-radius: 1rem;
+    padding: 1rem;
+    backdrop-filter: blur(6px);
+}
+
+.summary-label {
+    display: block;
+    font-size: 0.78rem;
+    margin-bottom: 0.35rem;
+    color: #dbeafe;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.stat-card {
+    background: #fff;
+    border-radius: 1rem;
+    padding: 1.1rem;
+    box-shadow: 0 10px 25px rgba(15, 23, 42, 0.06);
+    display: flex;
+    gap: 0.9rem;
+    align-items: center;
+    min-height: 130px;
+}
+
+.stat-card h3 {
+    margin: 0.2rem 0;
+    font-size: 1.2rem;
+    font-weight: 700;
+}
+
+.stat-card span {
+    color: #64748b;
+    font-size: 0.9rem;
+}
+
+.stat-label {
+    margin: 0;
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: #64748b;
+}
+
+.stat-icon {
+    font-size: 1.5rem;
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    background: #f8fafc;
+}
+
+.stat-card-danger { border-top: 4px solid #dc2626; }
+.stat-card-primary { border-top: 4px solid #2563eb; }
+.stat-card-warning { border-top: 4px solid #f59e0b; }
+.stat-card-success { border-top: 4px solid #16a34a; }
+
+.analytics-section {
+    margin-top: 0.5rem;
+}
+
+.section-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.section-heading h2 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin: 0;
+}
+
+.panel-card {
+    background: #fff;
+    border-radius: 1rem;
+    box-shadow: 0 10px 25px rgba(15, 23, 42, 0.06);
+    overflow: hidden;
+}
+
+.panel-card__header {
+    background: linear-gradient(90deg, #f8fafc 0%, #eef2ff 100%);
+    padding: 1rem 1.1rem;
+    font-weight: 700;
+    color: #0f172a;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.panel-card__body {
+    padding: 1rem;
+}
+
+@media (max-width: 992px) {
+    .hero-panel {
+        grid-template-columns: 1fr;
+    }
+
+    .stats-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 576px) {
+    .dashboard-shell {
+        padding: 0.8rem 0.8rem 1.5rem;
+    }
+
+    .hero-panel {
+        padding: 1.2rem;
+    }
+
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .section-heading {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
 }
 
 h1:focus {

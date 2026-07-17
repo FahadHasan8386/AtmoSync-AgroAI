@@ -1,219 +1,128 @@
-﻿// Store all chart instances
-const charts = {};
+﻿// Global variables to store chart instances
+let tempChartInstance, humidityChartInstance, mq7ChartInstance, mq136ChartInstance;
 
-// Common function
-function createChart(canvasId, labels, values, label, borderColor, backgroundColor) {
+window.addEventListener("DOMContentLoaded", () => {
+    console.log("Js loaded properly");
+});
 
-    const canvas = document.getElementById(canvasId);
+function renderTempChart(labels, values) {
+    const ctx = document.getElementById('tempChart');
+    if (!ctx) return;
 
-    if (!canvas)
-        return;
-
-    if (charts[canvasId]) {
-        charts[canvasId].destroy();
+    if (tempChartInstance) {
+        tempChartInstance.destroy();
     }
-
-    charts[canvasId] = new Chart(canvas, {
-
-        type: "line",
-
+    tempChartInstance = new Chart(ctx, {
+        type: 'line',
         data: {
-
             labels: labels,
-
             datasets: [{
-
-                label: label,
-
+                label: 'Temperature (°C)',
                 data: values,
-
-                borderColor: borderColor,
-
-                backgroundColor: backgroundColor,
-
-                fill: true,
-
-                borderWidth: 3,
-
-                tension: .4,
-
-                pointRadius: 4,
-
-                pointHoverRadius: 6,
-
-                pointBackgroundColor: borderColor,
-
-                pointBorderColor: "#ffffff",
-
-                pointBorderWidth: 2
-
+                borderColor: 'rgba(255, 99, 132, 1)',
+                backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                borderWidth: 2,
+                tension: 0.4
             }]
         },
-
         options: {
-
             responsive: true,
-
-            maintainAspectRatio: false,
-
-            interaction: {
-                intersect: false,
-                mode: "index"
-            },
-
-            animation: {
-                duration: 800
-            },
-
-            plugins: {
-
-                legend: {
-
-                    position: "bottom",
-
-                    labels: {
-
-                        usePointStyle: true,
-
-                        boxWidth: 10,
-
-                        padding: 20
-
-                    }
-                },
-
-                tooltip: {
-
-                    backgroundColor: "#1f2937",
-
-                    titleColor: "#fff",
-
-                    bodyColor: "#fff",
-
-                    cornerRadius: 8
-
-                }
-
-            },
-
-            scales: {
-
-                x: {
-
-                    grid: {
-
-                        color: "rgba(0,0,0,.05)"
-
-                    }
-
-                },
-
-                y: {
-
-                    beginAtZero: false,
-
-                    grace: "10%",
-
-                    grid: {
-
-                        color: "rgba(0,0,0,.05)"
-
-                    }
-
-                }
-
-            }
-
+            scales: { y: { min: 0, max: 100 } }
         }
-
     });
-
 }
 
-// Temperature
+function renderHumidityChart(labels, values) {
+    const ctx = document.getElementById('humidityChart');
+    if (!ctx) return;
 
-window.renderTempChart = function (labels, values) {
+    if (humidityChartInstance) {
+        humidityChartInstance.destroy();
+    }
+    humidityChartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Humidity (%)',
+                data: values,
+                borderColor: 'rgba(54, 162, 235, 1)',
+                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                borderWidth: 2,
+                tension: 0.4
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: { y: { min: 0, max: 100 } }
+        }
+    });
+}
 
-    createChart(
+//js chart for mq7
+function renderMQ7Chart(labels, values) {
+    const ctx = document.getElementById('mq7Chart'); // Ensure this ID matches your HTML
+    if (!ctx) return;
 
-        "tempChart",
+    if (mq7ChartInstance) {
+        mq7ChartInstance.destroy();
+    }
+    mq7ChartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'CO Level (PPM)',
+                data: values,
+                borderColor: 'rgba(75, 192, 192, 1)',
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                borderWidth: 2,
+                tension: 0.4
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    min: 0,
+                    max: 200,
+                    ticks: { stepSize: 20 }
+                }
+            }
+        }
+    });
+}
 
-        labels,
+//js chart for Mq136
+function renderMQ136Chart(labels, values) {
+    const ctx = document.getElementById('mq136Chart'); // Ensure this ID matches your HTML
+    if (!ctx) return;
 
-        values,
-
-        "Temperature (°C)",
-
-        "#ef4444",
-
-        "rgba(239,68,68,.15)"
-
-    );
-
-};
-
-// Humidity
-
-window.renderHumidityChart = function (labels, values) {
-
-    createChart(
-
-        "humidityChart",
-
-        labels,
-
-        values,
-
-        "Humidity (%)",
-
-        "#3b82f6",
-
-        "rgba(59,130,246,.15)"
-
-    );
-
-};
-
-// MQ7
-
-window.renderMQ7Chart = function (labels, values) {
-
-    createChart(
-
-        "mq7Chart",
-
-        labels,
-
-        values,
-
-        "CO Level (PPM)",
-
-        "#06b6d4",
-
-        "rgba(6,182,212,.15)"
-
-    );
-
-};
-
-// MQ136
-
-window.renderMQ136Chart = function (labels, values) {
-
-    createChart(
-
-        "mq136Chart",
-
-        labels,
-
-        values,
-
-        "H₂S Level",
-
-        "#f59e0b",
-
-        "rgba(245,158,11,.15)"
-
-    );
-
-};
+    if (mq136ChartInstance) {
+        mq136ChartInstance.destroy();
+    }
+    mq136ChartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'H2s Level',
+                data: values,
+                borderColor: 'rgba(75, 192, 192, 1)',
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                borderWidth: 2,
+                tension: 0.4
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    min: 0,
+                    max: 200,
+                    ticks: { stepSize: 20 }
+                }
+            }
+        }
+    });
+}

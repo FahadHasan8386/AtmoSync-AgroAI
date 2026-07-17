@@ -249,12 +249,12 @@
                 .ToList();
 
             await JS.InvokeVoidAsync(
-                "tempChart",
+                "renderTempChart",
                 DhtHistory.Select(x => x.CreatedAt.ToString("HH:mm")).ToArray(),
                 DhtHistory.Select(x => (float)x.Temperature).ToArray());
 
             await JS.InvokeVoidAsync(
-                "humidityChart",
+                "renderHumidityChart",
                 DhtHistory.Select(x => x.CreatedAt.ToString("HH:mm")).ToArray(),
                 DhtHistory.Select(x => (float)x.Humidity).ToArray());
         }
@@ -271,7 +271,7 @@
                 .ToList();
 
             await JS.InvokeVoidAsync(
-                "mQ7Chart",
+                "renderMQ7Chart",
                 MQ7History.Select(x => x.CreatedAt.ToString("HH:mm")).ToArray(),
                 MQ7History.Select(x => (float)x.COLevel).ToArray());
         }
@@ -287,7 +287,7 @@
                 .ToList();
 
             await JS.InvokeVoidAsync(
-                "mQ136Chart",
+                "renderMQ136Chart",
                 MQ136History.Select(x => x.CreatedAt.ToString("HH:mm")).ToArray(),
                 MQ136History.Select(x => (float)x.H2SLevel).ToArray());
         }

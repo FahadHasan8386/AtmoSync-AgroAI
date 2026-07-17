@@ -61,7 +61,7 @@ function renderHumidityChart(labels, values) {
 
 //js chart for mq7
 function renderMQ7Chart(labels, values) {
-    const ctx = document.getElementById('mq7Chart'); // Ensure this ID matches your HTML
+    const ctx = document.getElementById('mq7Chart'); 
     if (!ctx) return;
 
     if (mq7ChartInstance) {
@@ -95,7 +95,7 @@ function renderMQ7Chart(labels, values) {
 
 //js chart for Mq136
 function renderMQ136Chart(labels, values) {
-    const ctx = document.getElementById('mq136Chart'); // Ensure this ID matches your HTML
+    const ctx = document.getElementById('mq136Chart');
     if (!ctx) return;
 
     if (mq136ChartInstance) {

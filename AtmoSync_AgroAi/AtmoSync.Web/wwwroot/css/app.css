@@ -357,6 +357,8 @@ a, .btn-link {
 code {
     color: #c02d76;
 }
-canvas {
-    max-height: 450px;
+.chart-container {
+    position: relative;
+    width: 100%;
+    height: 320px;
 }

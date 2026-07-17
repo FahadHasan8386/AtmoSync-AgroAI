@@ -109,39 +109,13 @@
         </div>
     </section>
 
-    <section class="container-fluid py-5">
-
-        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap">
-
-            <div>
-                <span class="badge rounded-pill bg-primary-subtle text-primary px-3 py-2 mb-2">
-                    📊 Sensor Analytics
-                </span>
-
-                <h2 class="fw-bold mb-1">
-                    Environmental Trend Dashboard
-                </h2>
-
-                <p class="text-muted mb-0">
-                    Live visualization of the latest IoT sensor readings.
-                </p>
-            </div>
-
-            <div class="text-end">
-                <span class="badge bg-success fs-6 px-3 py-2">
-                    ● Live Monitoring
-                </span>
-            </div>
-
-        </div>
+    <section class="container-fluid mt-5">
 
         <div class="row g-4">
 
-            <!-- Temperature -->
             <div class="col-lg-6">
-                <div class="card shadow-sm border-0 h-100">
-
-                    <div class="card-header bg-danger text-white fw-semibold">
+                <div class="card shadow border-0 rounded-4 h-100">
+                    <div class="card-header bg-danger text-white fw-bold">
                         🌡 Temperature History
                     </div>
 
@@ -150,15 +124,12 @@
                             <canvas id="tempChart"></canvas>
                         </div>
                     </div>
-
                 </div>
             </div>
 
-            <!-- Humidity -->
             <div class="col-lg-6">
-                <div class="card shadow-sm border-0 h-100">
-
-                    <div class="card-header bg-primary text-white fw-semibold">
+                <div class="card shadow border-0 rounded-4 h-100">
+                    <div class="card-header bg-primary text-white fw-bold">
                         💧 Humidity History
                     </div>
 
@@ -167,16 +138,13 @@
                             <canvas id="humidityChart"></canvas>
                         </div>
                     </div>
-
                 </div>
             </div>
 
-            <!-- MQ7 -->
             <div class="col-lg-6">
-                <div class="card shadow-sm border-0 h-100">
-
-                    <div class="card-header bg-warning fw-semibold">
-                        🏭 CO Level Analytics (MQ-7)
+                <div class="card shadow border-0 rounded-4 h-100">
+                    <div class="card-header bg-warning fw-bold">
+                        🏭 CO Analytics
                     </div>
 
                     <div class="card-body">
@@ -184,16 +152,13 @@
                             <canvas id="mq7Chart"></canvas>
                         </div>
                     </div>
-
                 </div>
             </div>
 
-            <!-- MQ136 -->
             <div class="col-lg-6">
-                <div class="card shadow-sm border-0 h-100">
-
-                    <div class="card-header bg-success text-white fw-semibold">
-                        ☣ H₂S Level Analytics (MQ-136)
+                <div class="card shadow border-0 rounded-4 h-100">
+                    <div class="card-header bg-success text-white fw-bold">
+                        ☣ H₂S Analytics
                     </div>
 
                     <div class="card-body">
@@ -201,13 +166,13 @@
                             <canvas id="mq136Chart"></canvas>
                         </div>
                     </div>
-
                 </div>
             </div>
 
         </div>
 
     </section>
+    
 </div>
 
 
@@ -240,18 +205,12 @@
     {
         var dht = await DhtService.GetLatestAsync();
 
-
         Dht = dht?.Data;
-
-
 
         var mq136 = await MQ136Service.GetLatestAsync();
 
 
         MQ136 = mq136?.Data;
-
-
-
 
         var mq7 = await MQ7Service.GetLatestAsync();
 
@@ -265,11 +224,7 @@
 
             DhtHistory = dhtHistory.Data;
 
-
-
-
         var mq136History = await MQ136Service.GetLatestReadingsAsync(20);
-
 
         if (mq136History?.Data != null)
 
@@ -284,89 +239,44 @@
             MQ7History = mq7History.Data;
 
     }
-
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-
-
         if (firstRender)
         {
-
-
-            await Task.Delay(800);
-
-
-
-            await JS.InvokeVoidAsync(
-            "renderTempChart",
-            DhtHistory.Select(x => x.CreatedAt.ToString("HH:mm")).ToArray(),
-            DhtHistory.Select(x => x.Temperature).ToArray()
-            );
-
-
-
-
-            await JS.InvokeVoidAsync(
-            "renderHumidityChart",
-            DhtHistory.Select(x => x.CreatedAt.ToString("HH:mm")).ToArray(),
-            DhtHistory.Select(x => x.Humidity).ToArray()
-            );
-
-
-
-
-            await JS.InvokeVoidAsync(
-            "renderMQ7Chart",
-            MQ7History.Select(x => x.CreatedAt.ToString("HH:mm")).ToArray(),
-            MQ7History.Select(x => x.COLevel).ToArray()
-            );
-
-
-
-
-            await JS.InvokeVoidAsync(
-            "renderMQ136Chart",
-            MQ136History.Select(x => x.CreatedAt.ToString("HH:mm")).ToArray(),
-            MQ136History.Select(x => x.H2SLevel).ToArray()
-            );
-
-
+            await DrawCharts();
         }
-
-
     }
 
+    private async Task DrawCharts()
+    {
+        await JS.InvokeVoidAsync(
+            "renderTempChart",
+            DhtHistory.Select(x => x.CreatedAt.ToString("HH:mm")).ToArray(),
+            DhtHistory.Select(x => (double)x.Temperature).ToArray());
+
+        await JS.InvokeVoidAsync(
+            "renderHumidityChart",
+            DhtHistory.Select(x => x.CreatedAt.ToString("HH:mm")).ToArray(),
+            DhtHistory.Select(x => (double)x.Humidity).ToArray());
+
+        await JS.InvokeVoidAsync(
+            "renderMQ7Chart",
+            MQ7History.Select(x => x.CreatedAt.ToString("HH:mm")).ToArray(),
+            MQ7History.Select(x => (double)x.COLevel).ToArray());
+
+        await JS.InvokeVoidAsync(
+            "renderMQ136Chart",
+            MQ136History.Select(x => x.CreatedAt.ToString("HH:mm")).ToArray(),
+            MQ136History.Select(x => (double)x.H2SLevel).ToArray());
+    }
 
     private async Task RefreshData()
     {
         await LoadData();
+
         StateHasChanged();
 
-        await JS.InvokeVoidAsync(
-            "renderTempChart",
-            DhtHistory.Select(x => x.CreatedAt.ToString("HH:mm")).ToArray(),
-            DhtHistory.Select(x => x.Temperature).ToArray()
-        );
-
-        await JS.InvokeVoidAsync(
-            "renderHumidityChart",
-            DhtHistory.Select(x => x.CreatedAt.ToString("HH:mm")).ToArray(),
-            DhtHistory.Select(x => x.Humidity).ToArray()
-        );
-
-        await JS.InvokeVoidAsync(
-            "renderMQ7Chart",
-            MQ7History.Select(x => x.CreatedAt.ToString("HH:mm")).ToArray(),
-            MQ7History.Select(x => x.COLevel).ToArray()
-        );
-
-        await JS.InvokeVoidAsync(
-            "renderMQ136Chart",
-            MQ136History.Select(x => x.CreatedAt.ToString("HH:mm")).ToArray(),
-            MQ136History.Select(x => x.H2SLevel).ToArray()
-        );
+        await DrawCharts();
     }
-
-
 
 }

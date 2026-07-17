@@ -126,3 +126,4 @@ function renderMQ136Chart(labels, values) {
         }
     });
 }
+

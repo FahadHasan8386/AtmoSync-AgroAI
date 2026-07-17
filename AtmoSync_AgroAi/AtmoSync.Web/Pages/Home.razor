@@ -176,107 +176,138 @@
 </div>
 
 
-@code {
-
-
+@code
+{
     private DHTSensorDto? Dht;
-
     private MQ136SensorDto? MQ136;
-
     private MQ7SensorDto? MQ7;
 
-
-
     private List<DHTSensorDto> DhtHistory = new();
-
     private List<MQ136SensorDto> MQ136History = new();
-
     private List<MQ7SensorDto> MQ7History = new();
 
+    private bool IsLoading;
 
+    private PeriodicTimer? _timer;
+    private readonly CancellationTokenSource _cts = new();
 
-    protected override async Task OnInitializedAsync()
-    {
-        await LoadData();
-    }
-
-
-    private async Task LoadData()
-    {
-        var dht = await DhtService.GetLatestAsync();
-
-        Dht = dht?.Data;
-
-        var mq136 = await MQ136Service.GetLatestAsync();
-
-
-        MQ136 = mq136?.Data;
-
-        var mq7 = await MQ7Service.GetLatestAsync();
-
-
-        MQ7 = mq7?.Data;
-
-        var dhtHistory = await DhtService.GetLatestReadingsAsync(20);
-
-
-        if (dhtHistory?.Data != null)
-
-            DhtHistory = dhtHistory.Data;
-
-        var mq136History = await MQ136Service.GetLatestReadingsAsync(20);
-
-        if (mq136History?.Data != null)
-
-            MQ136History = mq136History.Data;
-
-
-        var mq7History = await MQ7Service.GetLatestReadingsAsync(20);
-
-
-        if (mq7History?.Data != null)
-
-            MQ7History = mq7History.Data;
-
-    }
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            await DrawCharts();
+            IsLoading = true;
+
+            await LoadCharts();
+
+            IsLoading = false;
+
+            StateHasChanged();
+
+            _timer = new PeriodicTimer(TimeSpan.FromSeconds(10));
+
+            _ = Task.Run(async () =>
+            {
+                try
+                {
+                    while (await _timer.WaitForNextTickAsync(_cts.Token))
+                    {
+                        await InvokeAsync(async () =>
+                        {
+                            await LoadCharts();
+
+                            StateHasChanged();
+                        });
+                    }
+                }
+                catch (OperationCanceledException)
+                {
+
+                }
+            });
         }
     }
 
-    private async Task DrawCharts()
+    private async Task LoadCharts()
     {
-        await JS.InvokeVoidAsync(
-            "renderTempChart",
-            DhtHistory.Select(x => x.CreatedAt.ToString("HH:mm")).ToArray(),
-            DhtHistory.Select(x => (double)x.Temperature).ToArray());
+        // Latest Cards
 
-        await JS.InvokeVoidAsync(
-            "renderHumidityChart",
-            DhtHistory.Select(x => x.CreatedAt.ToString("HH:mm")).ToArray(),
-            DhtHistory.Select(x => (double)x.Humidity).ToArray());
+        Dht = (await DhtService.GetLatestAsync())?.Data;
 
-        await JS.InvokeVoidAsync(
-            "renderMQ7Chart",
-            MQ7History.Select(x => x.CreatedAt.ToString("HH:mm")).ToArray(),
-            MQ7History.Select(x => (double)x.COLevel).ToArray());
+        MQ7 = (await MQ7Service.GetLatestAsync())?.Data;
 
-        await JS.InvokeVoidAsync(
-            "renderMQ136Chart",
-            MQ136History.Select(x => x.CreatedAt.ToString("HH:mm")).ToArray(),
-            MQ136History.Select(x => (double)x.H2SLevel).ToArray());
+        MQ136 = (await MQ136Service.GetLatestAsync())?.Data;
+
+
+        // DHT22 History
+
+        var dhtResponse = await DhtService.GetLatestReadingsAsync(20);
+
+        if (dhtResponse?.Data != null)
+        {
+            DhtHistory = dhtResponse.Data
+                .OrderBy(x => x.CreatedAt)
+                .ToList();
+
+            await JS.InvokeVoidAsync(
+                "tempChart",
+                DhtHistory.Select(x => x.CreatedAt.ToString("HH:mm")).ToArray(),
+                DhtHistory.Select(x => (float)x.Temperature).ToArray());
+
+            await JS.InvokeVoidAsync(
+                "humidityChart",
+                DhtHistory.Select(x => x.CreatedAt.ToString("HH:mm")).ToArray(),
+                DhtHistory.Select(x => (float)x.Humidity).ToArray());
+        }
+
+
+        // MQ7 History
+
+        var mq7Response = await MQ7Service.GetLatestReadingsAsync(20);
+
+        if (mq7Response?.Data != null)
+        {
+            MQ7History = mq7Response.Data
+                .OrderBy(x => x.CreatedAt)
+                .ToList();
+
+            await JS.InvokeVoidAsync(
+                "mQ7Chart",
+                MQ7History.Select(x => x.CreatedAt.ToString("HH:mm")).ToArray(),
+                MQ7History.Select(x => (float)x.COLevel).ToArray());
+        }
+
+        // MQ136 History
+
+        var mq136Response = await MQ136Service.GetLatestReadingsAsync(20);
+
+        if (mq136Response?.Data != null)
+        {
+            MQ136History = mq136Response.Data
+                .OrderBy(x => x.CreatedAt)
+                .ToList();
+
+            await JS.InvokeVoidAsync(
+                "mQ136Chart",
+                MQ136History.Select(x => x.CreatedAt.ToString("HH:mm")).ToArray(),
+                MQ136History.Select(x => (float)x.H2SLevel).ToArray());
+        }
     }
 
     private async Task RefreshData()
     {
-        await LoadData();
+        IsLoading = true;
+
+        await LoadCharts();
+
+        IsLoading = false;
 
         StateHasChanged();
-
-        await DrawCharts();
     }
 
+    public void Dispose()
+    {
+        _cts.Cancel();
+        _timer?.Dispose();
+        _cts.Dispose();
+    }
 }

@@ -240,7 +240,7 @@
 
         // DHT22 History
 
-        var dhtResponse = await DhtService.GetLatestReadingsAsync(20);
+        var dhtResponse = await DhtService.GetLatestReadingsAsync(30);
 
         if (dhtResponse?.Data != null)
         {
@@ -262,7 +262,7 @@
 
         // MQ7 History
 
-        var mq7Response = await MQ7Service.GetLatestReadingsAsync(20);
+        var mq7Response = await MQ7Service.GetLatestReadingsAsync(30);
 
         if (mq7Response?.Data != null)
         {
@@ -278,7 +278,7 @@
 
         // MQ136 History
 
-        var mq136Response = await MQ136Service.GetLatestReadingsAsync(20);
+        var mq136Response = await MQ136Service.GetLatestReadingsAsync(30);
 
         if (mq136Response?.Data != null)
         {
